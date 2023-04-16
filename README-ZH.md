@@ -24,9 +24,7 @@
 
 ## 环境搭建
 
-### EBPF && BBC
-
-#### 安装 WSL2
+### 安装 WSL2
 
 ```bash
 wsl --install
@@ -53,7 +51,7 @@ uname -r
 5.15.90.1-microsoft-standard-WSL2
 ```
 
-#### 编译 WSL 内核 ( [官方文档](https://github.com/iovisor/bcc/blob/master/INSTALL.md#wslwindows-subsystem-for-linux---binary) )
+### 编译 WSL 内核 ( [官方文档](https://github.com/iovisor/bcc/blob/master/INSTALL.md#wslwindows-subsystem-for-linux---binary) )
 
 安装依赖
 
@@ -99,7 +97,7 @@ sudo make modules_install
 mv /lib/modules/$KERNEL_VERSION-microsoft-standard-WSL2+/ /lib/modules/$KERNEL_VERSION-microsoft-standard-WSL2
 ```
 
-#### 安装 BCC 工具包 ( [官方文档](https://github.com/iovisor/bcc/blob/master/INSTALL.md#ubuntu---source) )
+### 安装 BCC 工具包 ( [官方文档](https://github.com/iovisor/bcc/blob/master/INSTALL.md#ubuntu---source) )
 
 查看 Ubuntu 版本
 

@@ -24,9 +24,7 @@
 
 ## Setup
 
-### EBPF && BBC
-
-#### Install WSL2
+### Install WSL2
 
 ```bash
 wsl --install
@@ -53,7 +51,7 @@ uname -r
 5.15.90.1-microsoft-standard-WSL2
 ```
 
-#### Compile WSL ( [document](https://github.com/iovisor/bcc/blob/master/INSTALL.md#wslwindows-subsystem-for-linux---binary) )
+### Compile WSL ( [document](https://github.com/iovisor/bcc/blob/master/INSTALL.md#wslwindows-subsystem-for-linux---binary) )
 
 Install dependencies
 
@@ -99,7 +97,7 @@ sudo make modules_install
 mv /lib/modules/$KERNEL_VERSION-microsoft-standard-WSL2+/ /lib/modules/$KERNEL_VERSION-microsoft-standard-WSL2
 ```
 
-#### Install BCC tools packages ( [document](https://github.com/iovisor/bcc/blob/master/INSTALL.md#ubuntu---source) )
+### Install BCC tools packages ( [document](https://github.com/iovisor/bcc/blob/master/INSTALL.md#ubuntu---source) )
 
 See Ubuntu version
 
@@ -202,7 +200,7 @@ sudo make install
 popd
 ```
 
-The default installation directory
+The default installation directory is
 
 ```
 /usr/share/bcc
