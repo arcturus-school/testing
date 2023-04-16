@@ -117,8 +117,8 @@ According to the documentation, need to install the following dependencies for j
 
 ```bash
 sudo apt install -y bison build-essential cmake flex git libedit-dev \
-libllvm14 llvm-14-dev libclang-14-dev \
-python3 zlib1g-dev libelf-dev libfl-dev python3-setuptools
+libllvm14 llvm-14-dev libclang-14-dev python3 zlib1g-dev libelf-dev \
+libfl-dev python3-setuptools libbpf-dev
 ```
 
 Download BCC code

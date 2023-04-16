@@ -66,7 +66,7 @@ KERNEL_VERSION=$(uname -r | cut -d '-' -f 1)
 ```
 
 ```bash
-git clone --depth 1 git@github.com:microsoft/WSL2-Linux-Kernel.git -b linux-msft-wsl-$KERNEL_VERSION
+git clone --depth 1 https://github.com/microsoft/WSL2-Linux-Kernel.git -b linux-msft-wsl-$KERNEL_VERSION
 ```
 
 ```bash
@@ -116,9 +116,9 @@ Codename:       jammy
 根据文档说明 jammy 需要安装如下依赖
 
 ```bash
-sudo apt install -y bison build-essential cmake flex git libedit-dev \
-libllvm14 llvm-14-dev libclang-14-dev \
-python3 zlib1g-dev libelf-dev libfl-dev python3-setuptools
+sudo apt install -y bison build-essential cmake flex git libedit-dev \ 
+libllvm14 llvm-14-dev libclang-14-dev python3 zlib1g-dev libelf-dev \
+libfl-dev python3-setuptools libbpf-dev
 ```
 
 下载 BCC 源码
