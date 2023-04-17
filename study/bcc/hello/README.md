@@ -40,11 +40,6 @@ debugfs  /sys/kernel/debug  debugfs  defaults  0  0
 
 ```
 cannot attach kprobe, probe entry may not exist
-Traceback (most recent call last):
-  File "/home/arcturus/software/testing/study/bcc/hello.py", line 15, in <module>
-    b.attach_kprobe(event=b"sys_exit", fn_name=b"hello")
-  File "/usr/lib/python3/dist-packages/bcc-0.27.0+f2551c13-py3.10.egg/bcc/__init__.py", line 845, in attach_kprobe
-Exception: Failed to attach BPF program b'hello' to kprobe b'sys_exit', it's not traceable (either non-existing, inlined, or marked as "notrace")
 ```
 
 ```bash
