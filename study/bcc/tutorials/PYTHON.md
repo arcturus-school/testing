@@ -458,7 +458,7 @@ while True:
 从环形缓冲区中读取数据, 可设置超时参数(ms), 不设置的话会不断轮询, 直到没有数据或回调返回负值
 
 ```c
-// 16 字节的环形缓冲区
+// 16 页的环形缓冲区
 BPF_RINGBUF_OUTPUT(buffer, 1 << 4);
 
 struct event {
