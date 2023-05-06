@@ -18,7 +18,11 @@
 
   - [hello_perf](./hello/hello_perf_output.py) bpf_perf_output 的使用
 
-- [disksnoop](./disksnoop.py) 监听磁盘读写
+- [disk](./disk)
+
+  - [disksnoop](./disk/disksnoop.py) 监听磁盘读写
+
+  - [bitehist](./disk/bitehist.py) 分析磁盘读写数据大小的分布
 
 - [sync_timing](./sync_timing.py) 监听 sync 指令调用
 
