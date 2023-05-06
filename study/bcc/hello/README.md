@@ -61,3 +61,5 @@ grep sys_exit /proc/kallsyms
 ```
 
 Use event `__x64_sys_exit` instead of `sys_exit`
+
+You can also use `b.get_syscall_fnname("exit")` instead of string
