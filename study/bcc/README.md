@@ -26,4 +26,6 @@
 
 - [sync_timing](./sync_timing.py) 监听 sync 指令调用
 
+- [task_switch](./task_switch.py) 进程切换检测
+
 - network
