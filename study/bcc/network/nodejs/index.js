@@ -3,11 +3,11 @@ import express from "express";
 const app = express();
 
 app.get("/", (_, res) => {
-  res.send("Hello world");
+  res.send("index");
 });
 
-app.get("/page1", (_, res) => {
-  res.send("Page1");
+app.get("/test", (_, res) => {
+  res.send("test");
 });
 
 app.listen(8083, () => {
