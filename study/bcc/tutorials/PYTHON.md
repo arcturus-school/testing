@@ -170,6 +170,8 @@ b.attach_uretprobe(name="c", sym="strlen", fn_name="count")
 
 ### USDT.enable_probe
 
+usdt: 用户级静态定义跟踪
+
 跟踪 pid 进程, 当处理 probe 时调用
 
 ```python
