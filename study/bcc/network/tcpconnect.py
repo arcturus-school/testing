@@ -3,6 +3,8 @@
 
 sudo python ./tcpconnect.py
 
+本程序不含建连时间, 可能需要改一下才能支持
+
 output:
     Tracing connect ... Hit Ctrl-C to end
     PID  COMM  IP SADDR  DADDR  DPORT(目的)
@@ -102,9 +104,9 @@ struct ipv6_data_t {
 BPF_PERF_OUTPUT(ipv6_events);
 
 struct ipv4_flow_key_t {
-    u32 saddr;
-    u32 daddr;
-    u16 dport;
+    u32 saddr; // 源地址
+    u32 daddr; // 目的地址
+    u16 dport; // 目的端口
 };
 
 BPF_HASH(ipv4_count, struct ipv4_flow_key_t);
@@ -208,7 +210,7 @@ ipv4_init_trace = """
         };
         
         data4.uid = bpf_get_current_uid_gid();
-        data4.ts_us = bpf_ktime_get_ns() / 1000;
+        data4.ts_us = bpf_ktime_get_ns() / 1000; // 微秒
         data4.saddr = skp->__sk_common.skc_rcv_saddr;
         data4.daddr = skp->__sk_common.skc_daddr;
         data4.lport = lport;
