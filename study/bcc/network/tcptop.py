@@ -34,13 +34,13 @@ def range_check(string):
 
 examples = """
 examples:
-    ./tcptop           # 跟踪主机上的 TCP 发送/接收流量
-    ./tcptop -C        # 不清除屏幕
-    ./tcptop -p 181    # 仅跟踪 PID 为 181 的 TCP 连接
+    ./tcptop                      # 跟踪主机上的 TCP 发送/接收流量
+    ./tcptop -C                   # 不清除屏幕
+    ./tcptop -p 181               # 仅跟踪 PID 为 181 的 TCP 连接
     ./tcptop --cgroupmap mappath  # 仅跟踪 BPF 映射中的 cgroups
     ./tcptop --mntnsmap mappath   # 仅跟踪 BPF 映射中的挂载命名空间
-    ./tcptop -4        # 仅跟踪 IPv4 协议族
-    ./tcptop -6        # 仅跟踪 IPv6 协议族
+    ./tcptop -4                   # 仅跟踪 IPv4 协议族
+    ./tcptop -6                   # 仅跟踪 IPv6 协议族
 """
 
 parser = argparse.ArgumentParser(
