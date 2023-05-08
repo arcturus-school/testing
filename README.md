@@ -2,7 +2,7 @@
 
 <h1>Course design of software testing</h1>
 
-<span>English</span> | <a href="./README-ZH.md">中文文档</a> | <a href="./setup/README.md">Setup</a>
+<span>ENGLISH</span> | <a href="./README-ZH.md">中文文档</a> | <a href="./setup/README.md">SETUP</a>
 
 </div>
 
@@ -12,7 +12,7 @@
 
 2. Need to collect relevant research materials in this field (word/ppt/pdf, etc.)
 
-3. Implement several common monitoring indicators, including at least the following: `process tcp setup time` `number of network retransmissions` `tcprtt` `biolatency`
+3. Implement several common monitoring indicators, including at least the following: `tcpceonnect` `tcpretrans` `tcprtt` `biolatency`
 
 4. Implement front-end display of monitoring indicators, with the ability to select the displayed monitoring indicators and the observation time period.
 
