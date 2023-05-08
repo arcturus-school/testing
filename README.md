@@ -2,11 +2,11 @@
 
 <h1>Course design of software testing</h1>
 
-<span>ENGLISH</span> | <a href="./README-ZH.md">中文文档</a> | <a href="./setup/README.md">SETUP</a>
+[NOTES](./study) | [LAB](./src) | [中文说明](./README-ZH.md)
 
 </div>
 
-## Requirements
+## Lab requirements
 
 1. Monitor the regular indicators of linux kernel based on `ebpf`.
 

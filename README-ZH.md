@@ -1,12 +1,12 @@
 <div align="center">
 
-<h1>软件测试课设</h1>
+<h2>软件测试课设</h2>
 
-<a href="./README.md">English</a> | <span>中文文档</span> | <a href="./setup/README-ZH.md">环境安装</a>
+[学习笔记](./study) | [实验部分](./src) | [English](./README.md)
 
 </div>
 
-## 要求
+## 实验要求
 
 1. 基于 `ebpf` 对 linux 内核常规的指标进行监控
 
