@@ -4,7 +4,7 @@ from bcc import BPF
 import struct
 
 # 加载 ebpf 程序
-b = BPF(src_file="tcprtt.bcc.c")
+b = BPF(src_file="tcprtt.bcc")
 
 # 插入探针
 b.attach_kprobe(event="tcp_sendmsg", fn_name="trace_tcp_send")
