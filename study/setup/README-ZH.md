@@ -189,3 +189,23 @@ popd
 ```bash
 sudo /usr/share/bcc/tools/execsnoop
 ```
+
+## prometheus
+
+[下载](https://prometheus.io/download/)软件包
+
+```sh
+wget https://github.com/prometheus/prometheus/releases/download/v2.44.0-rc.2/prometheus-2.44.0-rc.2.linux-amd64.tar.gz
+```
+
+```sh
+tar -xvf prometheus-2.44.0-rc.2.linux-amd64.tar.gz
+```
+
+开启服务
+
+```sh
+./prometheus --config.file=prometheus.yml
+```
+
+现在可以进入 `http://localhost:9090/graph` 来访问 Prometheus 自带的监控管理页面

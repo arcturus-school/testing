@@ -189,3 +189,23 @@ Test ( you need to install python-is-python3, because the python command does no
 ```bash
 sudo /usr/share/bcc/tools/execsnoop
 ```
+
+## prometheus
+
+[download](https://prometheus.io/download/)
+
+```sh
+wget https://github.com/prometheus/prometheus/releases/download/v2.44.0-rc.2/prometheus-2.44.0-rc.2.linux-amd64.tar.gz
+```
+
+```sh
+tar -xvf prometheus-2.44.0-rc.2.linux-amd64.tar.gz
+```
+
+start server
+
+```sh
+./prometheus --config.file=prometheus.yml
+```
+
+Now you can access the built-in monitoring page of Prometheus by visiting `http://localhost:9090/graph`
