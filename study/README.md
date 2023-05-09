@@ -2,7 +2,7 @@
 
 <h1>EBPF Study</h1>
 
-[环境搭建](./SETUP.md) | [BCC](./bcc) | [prometheus demo](./prometheus)
+[环境搭建](./SETUP.md) | [BCC](./bcc) | [Prometheus demo](./prometheus)
 
 <( \_ \_ )>
 
@@ -10,7 +10,7 @@
 
 ## tcprtt
 
-### bcc & prometheus
+### BCC & Prometheus
 
 #### Setup
 
@@ -21,7 +21,7 @@ sudo pip install prometheus-client
 #### Start exporter
 
 ```sh
-sudo python tcprtt_exporter.py
+sudo python ./prometheus/bcc/tcprtt_exporter.py
 ```
 
 Now you can access `http://127.0.0.1:8000/metrics` to see the metrics.
@@ -45,5 +45,6 @@ scrape_configs:
 start prometheus server
 
 ```sh
+# your prometheus installation path
 ./prometheus --config.file=prometheus.yml
 ```
