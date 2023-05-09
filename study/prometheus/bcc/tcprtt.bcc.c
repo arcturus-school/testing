@@ -1,9 +1,11 @@
+#ifndef __INTELLISENSE__
+
 #include <net/inet_sock.h>
 #include <uapi/linux/ptrace.h>
 
 struct data_t {
     u64 ts;        // 当前时间戳
-    u64 rtt_ms;    // 往返延迟
+    u64 rtt_ns;    // 往返延迟
     u32 dest_ip;   // 目的地址
     u32 src_ip;    // 源地址
     u16 dest_port; // 目的端口
@@ -36,7 +38,7 @@ int trace_tcp_ack(struct pt_regs* ctx, struct sock* sk) {
     if (datap == NULL) return 0;
 
     u64 rtt_ns    = bpf_ktime_get_ns() /* ack 的时间 */ - datap->ts;
-    datap->rtt_ms = rtt_ns / 1000;
+    datap->rtt_ns = rtt_ns;
 
     events.perf_submit(ctx, datap, sizeof(struct data_t));
 
@@ -44,3 +46,5 @@ int trace_tcp_ack(struct pt_regs* ctx, struct sock* sk) {
 
     return 0;
 }
+
+#endif
