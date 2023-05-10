@@ -75,6 +75,24 @@ sudo make modules_install
 mv /lib/modules/$KERNEL_VERSION-microsoft-standard-WSL2+/ /lib/modules/$KERNEL_VERSION-microsoft-standard-WSL2
 ```
 
+install bpftool
+
+```bash
+cd ~/WSL2-Linux-Kernel/tools/bpf/bpftool
+```
+
+```bash
+make
+```
+
+```bash
+sudo make install
+```
+
+```bash
+which bpftool # /usr/local/sbin/bpftool
+```
+
 ### Install BCC tools packages ( [document](https://github.com/iovisor/bcc/blob/master/INSTALL.md#ubuntu---source) )
 
 See Ubuntu version
