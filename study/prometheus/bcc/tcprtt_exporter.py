@@ -6,7 +6,7 @@ import struct
 # 加载 ebpf 程序
 b = BPF(src_file="tcprtt.bcc.c")
 
-# 插入探针
+# 对内核事件进行插桩
 b.attach_kprobe(event="tcp_sendmsg", fn_name="trace_tcp_send")
 b.attach_kprobe(event="tcp_ack", fn_name="trace_tcp_ack")
 
@@ -42,3 +42,7 @@ if __name__ == "__main__":
             b.perf_buffer_poll()
     except KeyboardInterrupt:
         print("\nexiting...")
+
+        # 清理内核事件
+        b.detach_kprobe(event="tcp_sendmsg", fn_name="trace_tcp_send")
+        b.detach_kprobe(event="tcp_ack", fn_name="trace_tcp_ack")
