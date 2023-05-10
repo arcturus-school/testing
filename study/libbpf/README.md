@@ -18,6 +18,16 @@
 
 - [tcprtt](./tcprtt) TCP Round-Trip Time
 
+#### Usage
+
+```sh
+make target=hello
+```
+
+```sh
+make clean target=hello
+```
+
 ### Other
 
 Generate `vmlinux.h`

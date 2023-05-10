@@ -1,6 +1,4 @@
-```sh
-make all
-```
+## Test
 
 ```sh
 sudo ./dist/hello
