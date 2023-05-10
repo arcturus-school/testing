@@ -2,7 +2,7 @@
 
 <h1>EBPF Study</h1>
 
-[环境搭建](./SETUP.md) | [BCC](./bcc) | [Prometheus demo](./prometheus)
+[环境搭建](./SETUP.md) | [BCC](./bcc) | [Libbpf](./libbpf) | [Prometheus](./prometheus)
 
 <( \_ \_ )>
 
@@ -45,6 +45,6 @@ scrape_configs:
 start prometheus server
 
 ```sh
-# your prometheus installation path
+# In your prometheus installation path
 ./prometheus --config.file=prometheus.yml
 ```
