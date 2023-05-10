@@ -13,3 +13,27 @@
 ### Examples
 
 - [hello](./hello) hello world demo
+
+### Other
+
+Generate `vmlinux.h`
+
+```sh
+# Make sure you have installed bpftool already.
+bpftool btf dump file /sys/kernel/btf/vmlinux format c > vmlinux.h
+```
+
+If you encounter the following error:
+
+```
+/usr/include/linux/types.h:5:10: fatal error: 'asm/types.h' file not found
+#include <asm/types.h>
+         ^~~~~~~~~~~~~
+1 error generated.
+```
+
+Create a symbolic Link to asm ( you need to have `asm-generic` )
+
+```sh
+sudo ln -s /usr/include/asm-generic /usr/include/asm
+```
