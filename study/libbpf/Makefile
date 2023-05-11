@@ -1,21 +1,38 @@
-CLAND   := clang
-CC      := gcc
-CFLAGS  := -O2 -g -Wall -I/usr/include/$(shell uname -m)-linux-gnu
-ARCH    := $(shell uname -m | sed 's/x86_64/x86/' | sed 's/aarch64/arm64/' \
-			 				| sed 's/ppc64le/powerpc/' | sed 's/mips.*/mips/' \
-			 				| sed 's/riscv64/riscv/' | sed 's/loongarch.*/loongarch/')
-BPF     := -target bpf -D__TARGET_ARCH_$(ARCH)
-VMLINUX := ./common/vmlinux.h
-INCLUDE := -I$(dir $(VMLINUX))
+CLAND    := clang
+CC       := gcc
+CFLAGS   := -O2 -g -Wall 
+PLATFORM := $(shell uname -m)
+ARCH     := $(shell uname -m | sed 's/x86_64/x86/' \
+						     | sed 's/aarch64/arm64/' \
+			 			     | sed 's/ppc64le/powerpc/' \
+						     | sed 's/mips.*/mips/' \
+			 			     | sed 's/riscv64/riscv/' \
+							 | sed 's/loongarch.*/loongarch/')
 
-target  := hello
-OUTPUT  := $(target)/dist
-PREFIX  := $(OUTPUT)/$(target)
+BPF      := -target bpf -D__TARGET_ARCH_$(ARCH)
+
+target   := hello
+OUTPUT   := $(target)/dist
+PREFIX   := $(OUTPUT)/$(target)
+COMMON   := ./common
+COMMON_D := $(COMMON)/dist
+
+VMLINUX  := $(COMMON)/vmlinux.h
+
+INCLUDE  := -I$(dir $(VMLINUX))
 
 $(shell mkdir -p $(OUTPUT))
+$(shell mkdir -p $(COMMON_D))
 
 .PHONY: all
 all: $(target)
+
+COMMON_C   := $(wildcard $(COMMON)/*.c)
+COMMON_OBJ := $(patsubst $(COMMON)/%.c,$(COMMON_D)/%.o,$(COMMON_C))
+
+# Build common
+$(COMMON_D)/%.o: $(COMMON)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Build BPF code
 $(PREFIX).bpf.o: $(target)/$(target).bpf.c
@@ -27,12 +44,13 @@ $(PREFIX).skel.h: $(PREFIX).bpf.o
 
 # Build user-space code
 $(PREFIX).o: $(target)/$(target).c $(PREFIX).skel.h
-	$(CC) $(CFLAGS) -c $(filter %.c,$^) -o $@
+	$(CC) $(CFLAGS) -c $(filter %.c,$^) -o $@ 
 
 # Build application binary
-$(target): $(PREFIX).o
-	$(CC) $(CFLAGS) $< -lbpf -o $(OUTPUT)/$@
+$(target): $(PREFIX).o $(COMMON_OBJ)
+	$(CC) $(CFLAGS) $< $(COMMON_OBJ) -lbpf -o $(OUTPUT)/$@
 
 
 clean:
 	if [ -d $(OUTPUT) ]; then rm -rf $(OUTPUT); fi
+	if [ -d $(COMMON_D) ]; then rm -rf $(COMMON_D); fi
