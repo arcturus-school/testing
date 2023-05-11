@@ -3,11 +3,11 @@ CC       := gcc
 CFLAGS   := -O2 -g -Wall 
 PLATFORM := $(shell uname -m)
 ARCH     := $(shell uname -m | sed 's/x86_64/x86/' \
-						     | sed 's/aarch64/arm64/' \
-			 			     | sed 's/ppc64le/powerpc/' \
-						     | sed 's/mips.*/mips/' \
-			 			     | sed 's/riscv64/riscv/' \
-							 | sed 's/loongarch.*/loongarch/')
+			| sed 's/aarch64/arm64/' \
+			| sed 's/ppc64le/powerpc/' \
+			| sed 's/mips.*/mips/' \
+			| sed 's/riscv64/riscv/' \
+			| sed 's/loongarch.*/loongarch/')
 
 BPF      := -target bpf -D__TARGET_ARCH_$(ARCH)
 
