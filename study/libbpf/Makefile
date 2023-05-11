@@ -1,8 +1,11 @@
 CLAND   := clang
 CC      := gcc
-CFLAGS  := -O2 -g -Wall
-BPF     := -target bpf
-VMLINUX := ./vmlinux.h
+CFLAGS  := -O2 -g -Wall -I/usr/include/$(shell uname -m)-linux-gnu
+ARCH    := $(shell uname -m | sed 's/x86_64/x86/' | sed 's/aarch64/arm64/' \
+			 				| sed 's/ppc64le/powerpc/' | sed 's/mips.*/mips/' \
+			 				| sed 's/riscv64/riscv/' | sed 's/loongarch.*/loongarch/')
+BPF     := -target bpf -D__TARGET_ARCH_$(ARCH)
+VMLINUX := ./common/vmlinux.h
 INCLUDE := -I$(dir $(VMLINUX))
 
 target  := hello
