@@ -1,7 +1,7 @@
 #define _DEFAULT_SOURCE
 
 #include "tcprtt.h"
-#include "../common/trace_helpers.h"
+#include "../common/helpers.h"
 #include "dist/tcprtt.skel.h"
 #include <arpa/inet.h>
 #include <bpf/bpf.h>
