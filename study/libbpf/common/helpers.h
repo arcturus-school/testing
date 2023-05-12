@@ -13,4 +13,6 @@ unsigned long long get_ktime_ns(void);
 
 bool find_ksym_by_name(const char*);
 
+void print_log2_hist(unsigned int* vals, int vals_size, const char* val_type);
+
 #endif
