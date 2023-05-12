@@ -96,7 +96,7 @@ void handle_event(void* ctx, int cpu, void* data, __u32 data_sz) {
     char* type   = e->type == RETRANSMIT ? "R" : "L";
     char* states = tcp_states[e->state];
 
-    printf("%-6d %-12s %-2d %-20s %-6d %-2s %-20s %-6d %-15s\n", e->tgid, e->comm, e->af == AF_INET ? 4 : 6,
+    printf("%-6d %-12s %-2d %-20s %-6d %-2s> %-20s %-6d %-15s\n", e->tgid, e->comm, e->af == AF_INET ? 4 : 6,
         inet_ntop(e->af, &s, src, sizeof(src)), e->lport, type, inet_ntop(e->af, &d, dst, sizeof(dst)), ntohs(e->dport), states);
 }
 

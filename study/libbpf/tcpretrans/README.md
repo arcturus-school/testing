@@ -17,8 +17,8 @@ LADDR                LPORT  RADDR                RPORT  RETRANSMITS
 
 ```
 TIME      PID    COMM         IP LADDR                LPORT  T> DADDR                DPORT  STATE
-00:08:53  0      swapper/6    4  172.18.246.19        41846  L  20.189.173.3         443    ESTABLISHED
-00:08:53  0      swapper/7    4  172.18.246.19        41846  R  20.189.173.3         443    ESTABLISHED
-00:08:53  0      swapper/7    4  172.18.246.19        41846  R  20.189.173.3         443    ESTABLISHED
-00:08:54  0      swapper/6    4  172.18.246.19        41846  L  20.189.173.3         443    LAST_ACK
+00:08:53  0      swapper/6    4  172.18.246.19        41846  L>  20.189.173.3         443    ESTABLISHED
+00:08:53  0      swapper/7    4  172.18.246.19        41846  R>  20.189.173.3         443    ESTABLISHED
+00:08:53  0      swapper/7    4  172.18.246.19        41846  R>  20.189.173.3         443    ESTABLISHED
+00:08:54  0      swapper/6    4  172.18.246.19        41846  L>  20.189.173.3         443    LAST_ACK
 ```
