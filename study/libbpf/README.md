@@ -18,7 +18,11 @@
 
 - [tcprtt](./tcprtt) TCP Round-Trip Time
 
-- [biolatency](./biolatency) I/O 延迟
+- [biolatency](./biolatency) I/O latency
+
+- [tcpconnlat](./tcpconnlat) TCP connection latency
+
+- [tcpretrans](./tcpretrans) TCP retransmission
 
 #### Usage
 
