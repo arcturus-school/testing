@@ -106,9 +106,7 @@ static void display(struct bpf_map* map) {
 
         if (err < 0 && err != -EINTR) {
             fprintf(stderr, "Error polling perf buffer: %s\n", strerror(-err));
-            perf_buffer__free(pb);
-
-            return;
+            break;
         }
 
         if (!err || exiting || (configs.duration && get_ktime_ns() > time_end)) {
@@ -117,8 +115,6 @@ static void display(struct bpf_map* map) {
     }
 
     perf_buffer__free(pb);
-
-    return;
 }
 
 int main(int argc, char** argv) {
