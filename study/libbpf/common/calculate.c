@@ -1,5 +1,7 @@
+#ifndef __INTELLISENSE__
+
 // 计算以 2 为低的对数
-unsigned long long log2(unsigned int v) {
+static __always_inline unsigned long long log2(unsigned int v) {
     unsigned int shift, r;
 
     r = (v > 0xFFFF) << 4;
@@ -18,7 +20,7 @@ unsigned long long log2(unsigned int v) {
     return r;
 }
 
-unsigned long long log2l(unsigned long long v) {
+static __always_inline unsigned long long log2l(unsigned long long v) {
     unsigned int hi = v >> 32;
 
     if (hi) {
@@ -27,3 +29,5 @@ unsigned long long log2l(unsigned long long v) {
         return log2(v);
     }
 }
+
+#endif
