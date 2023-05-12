@@ -24,6 +24,8 @@ INCLUDE  := -I$(dir $(VMLINUX))
 $(shell mkdir -p $(OUTPUT))
 $(shell mkdir -p $(COMMON_D))
 
+$(shell bpftool btf dump file /sys/kernel/btf/vmlinux format c > $(COMMON)/vmlinux.h)
+
 .PHONY: all
 all: $(target)
 
