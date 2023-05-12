@@ -93,7 +93,7 @@ b.attach_kprobe(event="sys_clone", fn_name="do_trace")
 
 ### detach_kprobe
 
-分离指定事件的处理程序
+取消对应事件的插桩
 
 ```python
 b.detach_kprobe(event="sys_clone", fn_name="do_trace")
@@ -146,7 +146,7 @@ b.attach_tracepoint("random:urandom_read", "printarg")
 
 ### attach_raw_tracepoint
 
-同 attach_tracepoint
+和 attach_tracepoint 类型, 原始跟踪点
 
 ```python
 b.attach_raw_tracepoint(tp="sched_switch", fn_name="do_trace")
