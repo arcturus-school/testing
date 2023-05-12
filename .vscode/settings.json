@@ -1,6 +1,10 @@
 {
   "files.associations": {
-    "*.h": "c"
+    "*.cjson": "jsonc",
+    "*.wxss": "css",
+    "*.wxs": "javascript",
+    "*.h": "c",
+    "numbers": "c"
   },
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
