@@ -109,7 +109,7 @@ static void display(struct bpf_map* map) {
             break;
         }
 
-        if (!err || exiting || (configs.duration && get_ktime_ns() > time_end)) {
+        if (exiting || (configs.duration && get_ktime_ns() > time_end)) {
             break;
         }
     }
