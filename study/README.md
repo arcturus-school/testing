@@ -70,7 +70,7 @@ sudo ldconfig
 ### Build exporter
 
 ```sh
-cd libbpf
+cd ./prometheus/libbpf
 ```
 
 ```sh
@@ -78,7 +78,7 @@ make
 ```
 
 ```sh
-sudo ./dist/tcprtt
+sudo ./prometheus/dist/tcprtt
 ```
 
 ```
