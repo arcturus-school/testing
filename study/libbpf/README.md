@@ -12,6 +12,8 @@
 
 - [ebpf_exporter](https://github.com/cloudflare/ebpf_exporter)
 
+- [libbpf-API](https://libbpf.readthedocs.io/en/latest/api.html)
+
 ### Examples
 
 - [hello](./hello) hello world demo
