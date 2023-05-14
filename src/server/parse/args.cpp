@@ -1,5 +1,9 @@
 #include "args.hpp"
 
+extern bool enable_debug;
+
+extern std::string config_path;
+
 static const struct argp_option options[] = {
     { "verbose", 'v', 0, 0, "Enable debug" },
     { "config", 'c', "FILE", 0, "Specify config file (YAML format)" },
@@ -8,13 +12,12 @@ static const struct argp_option options[] = {
 
 static error_t parse_opt(int key, char* arg, struct argp_state* state) {
     if (key == 'v') {
+        enable_debug = true;
         Log::log("Debug enabled.", "\n");
-        debug = true;
         return 0;
     }
 
     if (key == 'c') {
-        Log::log("config path: ", arg, "\n");
         config_path = arg;
         return 0;
     }
@@ -25,6 +28,5 @@ static error_t parse_opt(int key, char* arg, struct argp_state* state) {
 static struct argp argp_parser = { options, parse_opt, 0, 0 };
 
 error_t parse_args(int argc, char* argv[]) {
-    Log::log("args number: ", argc - 1);
     return argp_parse(&argp_parser, argc, argv, 0, NULL, NULL);
 }
