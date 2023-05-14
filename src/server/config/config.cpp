@@ -1,18 +1,10 @@
 #include "config.hpp"
 
-// 保存所有 metrics 和 object
-std::map<std::string, Program> programs;
+extern std::map<std::string, Program> programs;
 
 extern std::string config_path;
 
 extern int port;
-
-void close_bpf_object() {
-    for (auto it = programs.begin(); it != programs.end(); ++it) {
-        bpf_object__close(it->second.object);
-        Log::log(it->first, "_bpf_object is closed.\n");
-    }
-}
 
 error_t read_config() {
     if (!exists(config_path)) {
