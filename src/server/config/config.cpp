@@ -17,7 +17,7 @@ void close_bpf_object() {
 
 error_t read_config() {
     if (!exists(config_path)) {
-        Log::error("Config file ", config_path, "does not exist.\n");
+        Log::error("Config file ", config_path, " does not exist.\n");
         return -1;
     }
 
