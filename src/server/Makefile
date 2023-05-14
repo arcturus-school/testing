@@ -22,15 +22,17 @@ $(shell bpftool btf dump file /sys/kernel/btf/vmlinux format c > bpf/vmlinux.h)
 .PHONY: all
 all: $(APP)
 
-UTILS_C  := $(wildcard utils/*.cpp)
-UTILS_H  := $(wildcard utils/*.hpp)
-PARSE_C  := $(wildcard parse/*.cpp)
-PARSE_H  := $(wildcard parse/*.hpp)
-CONFIG_C := $(wildcard config/*.cpp)
-CONFIG_H := $(wildcard config/*.hpp)
+EXPORTER_C := $(wildcard exporter/*.cpp)
+EXPORTER_H := $(wildcard exporter/*.hpp)
+UTILS_C    := $(wildcard utils/*.cpp)
+UTILS_H    := $(wildcard utils/*.hpp)
+PARSE_C    := $(wildcard parse/*.cpp)
+PARSE_H    := $(wildcard parse/*.hpp)
+CONFIG_C   := $(wildcard config/*.cpp)
+CONFIG_H   := $(wildcard config/*.hpp)
 
-SRC_C := $(UTILS_C) $(PARSE_C) $(CONFIG_C)
-SRC_H := $(UTILS_H) $(PARSE_H) $(CONFIG_H)
+SRC_C := $(UTILS_C) $(PARSE_C) $(CONFIG_C) $(EXPORTER_C)
+SRC_H := $(UTILS_H) $(PARSE_H) $(CONFIG_H) $(EXPORTER_H)
 
 LIBS  := -lyaml-cpp -lprometheus-cpp-pull -lprometheus-cpp-core -lz
 
