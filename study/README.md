@@ -67,6 +67,12 @@ This might happen if you have recently installed a shared library and didn't run
 sudo ldconfig
 ```
 
+You can also install as a static library
+
+```sh
+cmake .. -DBUILD_SHARED_LIBS=OFF
+```
+
 ### Build exporter
 
 ```sh
