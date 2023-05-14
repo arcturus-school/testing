@@ -4,6 +4,7 @@
     "*.wxss": "css",
     "*.wxs": "javascript",
     "*.h": "c",
+    "*.hpp": "cpp",
     "numbers": "c",
     "chrono": "cpp",
     "vector": "cpp",
