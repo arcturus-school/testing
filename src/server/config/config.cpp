@@ -8,6 +8,8 @@ std::vector<bpf_object*> objects;
 
 extern std::string config_path;
 
+extern int port;
+
 void close_bpf_object() {
     for (std::size_t i = 0; i < objects.size(); i++) {
         bpf_object__close(objects[i]);
@@ -24,6 +26,10 @@ error_t read_config() {
     YAML::Node config = YAML::LoadFile(config_path);
 
     auto p = config["programs"];
+
+    if (config["server"] && config["server"]["port"]) {
+        port = config["server"]["port"].as<int>();
+    }
 
     for (std::size_t i = 0; i < p.size(); i++) {
         struct Program item = {
