@@ -66,7 +66,8 @@
     "thread": "cpp",
     "cfenv": "cpp",
     "cinttypes": "cpp",
-    "typeinfo": "cpp"
+    "typeinfo": "cpp",
+    "valarray": "cpp"
   },
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
