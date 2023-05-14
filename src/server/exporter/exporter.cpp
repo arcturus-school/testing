@@ -61,3 +61,13 @@ void close_bpf_object() {
         }
     }
 }
+
+void attach_all_bpf_program() {
+    struct bpf_program* prog;
+
+    for (auto it = programs.begin(); it != programs.end(); it++) {
+        bpf_object__for_each_program(prog, it->second.object) {
+            bpf_program__attach(prog);
+        }
+    }
+}
