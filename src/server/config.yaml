@@ -1,0 +1,71 @@
+programs:
+  - name: tcprtt
+    metrics:
+      histograms:
+        - name: tcp_retrans_histogram
+          description: TCP retransmissions histogram
+          bucket_type: exp2
+          bucket_min: 0
+          bucket_max: 27
+  - name: tcpretrans
+    metrics:
+      counters:
+        - name: tcp_retrans_counter
+          description: The number of TCP retransmissions
+          labels:
+            - name: saddr
+              decoders:
+                - name: inet # 将 IP 转成字符串
+            - name: daddr
+              decoders:
+                - name: inet # 将 IP 转成字符串
+            - name: sport
+            - name: dport
+            - name: protocol
+              decoders:
+                - name: static_map
+                  static_map:
+                    2: IPv4
+                    10: IPv6
+      histograms:
+        - name: tcp_retrans_histogram
+          description: TCP retransmissions histogram
+          bucket_type: exp2
+          bucket_min: 0
+          bucket_max: 27
+  - name: tcpconnlat
+    metrics:
+      counters:
+        - name: tcp_connect_latency_counter
+          description: Tcp connect latency counter
+          labels:
+            - name: pid
+            - name: comm
+            - name: saddr
+            - name: daddr
+            - name: sport
+            - name: dport
+            - name: protocol
+  - name: biolatency
+    metrics:
+      histograms:
+        - name: bio_latency_histogram
+          help: Block IO latency histogram
+          bucket_type: exp2
+          bucket_min: 0
+          bucket_max: 27
+      counters:
+        - name: bio_latency_counter
+          help: Block IO latency of dev
+          labels:
+            - name: dev # device
+            - name: op # operation
+              decoders:
+                - name: static_map
+                  static_map:
+                    0: read
+                    1: write
+                    2: flush
+
+server:
+  port: 8080 # 不写默认 8080
