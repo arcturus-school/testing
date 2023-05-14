@@ -1,19 +1,16 @@
 #include "config.hpp"
 
-// 保存所有 metrics 的配置
-std::vector<Program> programs;
-
-// 保存所有 ebpf 程序
-std::vector<bpf_object*> objects;
+// 保存所有 metrics 和 object
+std::map<std::string, Program> programs;
 
 extern std::string config_path;
 
 extern int port;
 
 void close_bpf_object() {
-    for (std::size_t i = 0; i < objects.size(); i++) {
-        bpf_object__close(objects[i]);
-        Log::log(programs[i].name, "_bpf_object is closed.\n");
+    for (auto it = programs.begin(); it != programs.end(); ++it) {
+        bpf_object__close(it->second.object);
+        Log::log(it->first, "_bpf_object is closed.\n");
     }
 }
 
@@ -33,13 +30,12 @@ error_t read_config() {
 
     for (std::size_t i = 0; i < p.size(); i++) {
         struct Program item = {
-            .name    = p[i]["name"].as<std::string>(),
             .metrics = p[i]["metrics"],
         };
 
-        Log::log("Read metrics ", p[i]["name"].as<std::string>(), ".\n");
+        programs.insert(std::make_pair(p[i]["name"].as<std::string>(), item));
 
-        programs.push_back(item);
+        Log::log("Read metrics ", p[i]["name"].as<std::string>(), ".\n");
     }
 
     return 0;

@@ -3,13 +3,14 @@
 
 #include "../utils/file.hpp"
 #include "../utils/log.hpp"
+
 #include <bpf/libbpf.h>
+#include <map>
 #include <string>
-#include <vector>
 #include <yaml-cpp/yaml.h>
 
 struct Program {
-    std::string name;
+    bpf_object* object;
     YAML::Node  metrics;
 };
 
