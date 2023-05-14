@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../config.hpp"
+#include "../config/config.hpp"
 #include "../log/log.hpp"
 #include <argp.h>
 #include <iostream>
