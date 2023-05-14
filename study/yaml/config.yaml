@@ -1,0 +1,20 @@
+person:
+  name: John
+  age: 30
+  address:
+    street: 123 Main St
+    city: Anytown
+    state: CA
+    zip: "12345" # 字符串
+
+# 列表
+fruits:
+  - apple
+  - orange
+  - banana
+
+# 嵌套列表
+matrix:
+  - [1, 2, 3]
+  - [4, 5, 6]
+  - [7, 8, 9]
