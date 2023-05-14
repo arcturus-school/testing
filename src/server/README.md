@@ -12,10 +12,16 @@ then
 make
 ```
 
-Make sure there is a `*.bpf.o` file in `dist` with the same name as the metrics in `config.yaml`. 
+Make sure there is a `*.bpf.o` file in `dist` with the same name as the metrics in `config.yaml`.
 
 Now you can run this exporter via
 
 ```sh
 sudo ./ecli -c config.yaml -v
+```
+
+## Use shell
+
+```sh
+sudo bash ./run.sh
 ```
