@@ -9,13 +9,13 @@ static const struct argp_option options[] = {
 static error_t parse_opt(int key, char* arg, struct argp_state* state) {
     if (key == 'v') {
         Log::log("Debug enabled.", "\n");
-        configs.debug = true;
+        debug = true;
         return 0;
     }
 
     if (key == 'c') {
         Log::log("config path: ", arg, "\n");
-        configs.config_path = arg;
+        config_path = arg;
         return 0;
     }
 
