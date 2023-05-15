@@ -69,10 +69,6 @@ std::vector<double> create_exp2_buckets(std::int64_t start, std::int64_t end, st
     return bucket;
 }
 
-void handle_lost_events(void* ctx, int cpu, __u64 lost_cnt) {
-    Log::error("Lost ", lost_cnt, " events on CPU #", cpu);
-}
-
 Histogram::Histogram(int fd, YAML::Node histograms) {
     this->fd         = fd;
     this->histograms = histograms;

@@ -97,3 +97,7 @@ unsigned long long read_data_by_type(char* p, const std::string& type, char* buf
 
     return key;
 }
+
+void handle_lost_events(void* ctx, int cpu, unsigned long long lost_cnt) {
+    Log::error("Lost ", lost_cnt, " events on CPU #", cpu);
+}

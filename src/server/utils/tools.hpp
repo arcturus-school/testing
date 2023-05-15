@@ -1,6 +1,7 @@
 #ifndef _TOOLS_H
 #define _TOOLS_H
 
+#include "log.hpp"
 #include <cstring>
 #include <map>
 #include <stdexcept>
@@ -17,5 +18,7 @@ unsigned int read_u32(void* p, char* buf);
 unsigned long long read_u64(void* p, char* buf);
 
 unsigned long long read_data_by_type(char* p, const std::string& type, char* buf);
+
+void handle_lost_events(void* ctx, int cpu, unsigned long long lost_cnt);
 
 #endif
