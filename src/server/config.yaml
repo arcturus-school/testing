@@ -7,6 +7,9 @@ programs:
           bucket_type: exp2
           bucket_min: 0
           bucket_max: 27
+          labels:
+            - name: rtt
+              type: u64 # 要求与 bpf 结构体数据类型一致
   - name: tcpretrans
     metrics:
       counters:
@@ -14,38 +17,35 @@ programs:
           description: The number of TCP retransmissions
           labels:
             - name: saddr
+              type: u8[16]
               decoders:
                 - name: inet # 将 IP 转成字符串
             - name: daddr
+              type: u8[16]
               decoders:
                 - name: inet # 将 IP 转成字符串
             - name: sport
+              type: u8
             - name: dport
+              type: u8
             - name: protocol
+              type: int
               decoders:
                 - name: static_map
                   static_map:
                     2: IPv4
                     10: IPv6
-      histograms:
-        - name: tcp_retrans_histogram
-          description: TCP retransmissions histogram
-          bucket_type: exp2
-          bucket_min: 0
-          bucket_max: 27
   - name: tcpconnlat
     metrics:
-      counters:
-        - name: tcp_connect_latency_counter
-          description: Tcp connect latency counter
+      histograms:
+        - name: tcp_connect_latency
+          description: Tcp connect latency histograms
+          bucket_min: 0
+          bucket_max: 27
           labels:
-            - name: pid
-            - name: comm
-            - name: saddr
-            - name: daddr
-            - name: sport
-            - name: dport
-            - name: protocol
+            # 观测值放第一个
+            - name: delta
+              type: u64
   - name: biolatency
     metrics:
       histograms:
@@ -54,14 +54,16 @@ programs:
           bucket_type: exp2
           bucket_min: 0
           bucket_max: 27
-      counters:
-        - name: bio_latency_counter
-          help: Block IO latency of dev
           labels:
+            - name: latency
+              type: u64
             - name: dev # device
+              type: u32
             - name: op # operation
+              type: u8
               decoders:
                 - name: static_map
+                  type:
                   static_map:
                     0: read
                     1: write
