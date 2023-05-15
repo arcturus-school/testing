@@ -8,7 +8,7 @@ struct data_tcp_connlat_t {
 
 struct {
     __uint(type, BPF_MAP_TYPE_HASH);
-    __uint(max_entries, 4096);
+    __uint(max_entries, MAX_ENTRIES);
     __type(key, struct sock*);
     __type(value, u64);
 } start SEC(".maps");
@@ -28,17 +28,17 @@ static int trace_connect(struct sock* sk) {
     return 0;
 }
 
-static int handle_tcp_rcv_state_process(void* ctx, struct sock* sk) {
+static int handle_tcp_rcv_state_process(struct pt_regs* ctx, struct sock* sk) {
     if (BPF_CORE_READ(sk, __sk_common.skc_state) != TCP_SYN_SENT) return 0;
 
-    u64* start = bpf_map_lookup_elem(&start, &sk);
+    u64* s = bpf_map_lookup_elem(&start, &sk);
 
-    if (!start) return 0;
+    if (!s) return 0;
 
     struct data_tcp_connlat_t data = {};
 
     u64 ts    = bpf_ktime_get_ns();
-    s64 delta = (s64)(ts - *start);
+    s64 delta = (s64)(ts - *s);
 
     if (delta < 0) {
         bpf_map_delete_elem(&start, &sk);

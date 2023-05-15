@@ -21,6 +21,9 @@ class Log {
 
     template <typename... Args>
     static void error(const Args&... args);
+
+    template <typename... Args>
+    static void success(const Args&... args);
 };
 
 extern bool enable_debug;
@@ -38,6 +41,11 @@ void Log::warn(const Args&... args) {
 template <typename... Args>
 void Log::error(const Args&... args) {
     (std::cout << RED("error: ") << ... << args);
+}
+
+template <typename... Args>
+void Log::success(const Args&... args) {
+    if (enable_debug) (std::cout << GREEN("success: ") << ... << args);
 }
 
 #endif

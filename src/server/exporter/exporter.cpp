@@ -33,6 +33,8 @@ error_t open_all_bpf_object() {
             return -1;
         }
 
+        Log::success("Open " + it->first + " bpf object.\n");
+
         it->second.object = obj;
     }
 
@@ -48,6 +50,8 @@ error_t load_all_bpf_object() {
             close_bpf_object();
             return -1;
         }
+
+        Log::success("Load " + it->first + " bpf object.\n");
     }
 
     return 0;
@@ -69,5 +73,51 @@ void attach_all_bpf_program() {
         bpf_object__for_each_program(prog, it->second.object) {
             bpf_program__attach(prog);
         }
+    }
+}
+
+// 保存所有直方图数据
+std::vector<Histogram*> hists;
+
+void register_all_event_handle() {
+    error_t err;
+
+    for (auto p = programs.begin(); p != programs.end(); p++) {
+        auto histograms = p->second.metrics["histograms"];
+        auto counters   = p->second.metrics["counters"];
+
+        if (histograms) {
+            Log::log("Register histograms of ", p->first, "...\n");
+
+            for (size_t i = 0; i < histograms.size(); i++) {
+                std::string map_name = histograms[i]["name"].as<std::string>();
+
+                int fd = bpf_object__find_map_fd_by_name(p->second.object, map_name.c_str());
+
+                if (fd < 0) {
+                    Log::warn("There is not map names ", map_name, " in ", p->first, ".\n");
+                    continue;
+                }
+
+                Log::success("Obtain file descriptor of map ", map_name, " in ", p->first, ".\n");
+
+                Histogram* hist = new Histogram(fd, histograms[i]);
+
+                err = hist->init();
+
+                if (err) {
+                    Log::warn("Failed to initialize listening event of ", map_name, " in ", p->first, ".\n");
+                    continue;
+                }
+
+                hists.push_back(hist);
+            }
+        }
+    }
+}
+
+void observe() {
+    for (auto it = hists.begin(); it != hists.end(); it++) {
+        (*it)->observe();
     }
 }

@@ -50,7 +50,7 @@ programs:
     metrics:
       histograms:
         - name: bio_latency_histogram
-          help: Block IO latency histogram
+          description: Block IO latency histogram
           bucket_type: exp2
           bucket_min: 0
           bucket_max: 27

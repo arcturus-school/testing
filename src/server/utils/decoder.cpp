@@ -20,7 +20,7 @@ std::string inet(int af, const void* ip) {
         inet_ntop(AF_INET, v4, addr, INET_ADDRSTRLEN);
     } else if (af == AF_INET6) {
         struct in6_addr* v6 = (struct in6_addr*)ip;
-        inet_ntop(AF_INET6, addr, addr, INET6_ADDRSTRLEN);
+        inet_ntop(AF_INET6, v6, addr, INET6_ADDRSTRLEN);
     } else {
         Log::warn("Not support family.\n");
         return "";

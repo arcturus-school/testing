@@ -9,6 +9,8 @@ extern std::string config_path;
 
 extern bool enable_debug;
 
+extern bool enable_bpf_debug;
+
 extern bool exiting;
 
 static void sig_handler(int sig) {
@@ -16,7 +18,7 @@ static void sig_handler(int sig) {
 }
 
 static int libbpf_print_fn(enum libbpf_print_level level, const char* format, va_list args) {
-    if (level == LIBBPF_DEBUG && !enable_debug) return 0;
+    if (level == LIBBPF_DEBUG && !enable_bpf_debug) return 0;
 
     return vfprintf(stderr, format, args);
 }
@@ -53,7 +55,11 @@ int main(int argc, char* argv[]) {
 
     attach_all_bpf_program();
 
+    register_all_event_handle();
+
     run_exporter();
+
+    observe();
 
     // 一些清理工作
     close_bpf_object();
