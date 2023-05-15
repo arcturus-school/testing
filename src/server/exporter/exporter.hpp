@@ -20,8 +20,6 @@ struct Program {
     YAML::Node  metrics;
 };
 
-void run_exporter();
-
 // 打开所有 ebpf 对象
 error_t open_all_bpf_object();
 

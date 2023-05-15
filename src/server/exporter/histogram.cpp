@@ -14,6 +14,16 @@ std::vector<double> create_linear_buckets(std::int64_t start, std::int64_t end, 
     return bucket;
 }
 
+std::vector<double> create_exp2_buckets(std::int64_t start, std::int64_t end, std::int64_t step) {
+    std::vector<double> bucket;
+
+    for (auto i = start; i < end; i += step) {
+        bucket.push_back(pow(2, i));
+    }
+
+    return bucket;
+}
+
 void handle_lost_events(void* ctx, int cpu, __u64 lost_cnt) {
     Log::error("Lost ", lost_cnt, " events on CPU #", cpu);
 }
@@ -53,9 +63,9 @@ error_t Histogram::init() {
     }
 
     int min = histograms["bucket_min"] ? histograms["bucket_min"].as<int>() : 0;
-    int max = histograms["bucket_max"] ? histograms["bucket_min"].as<int>() : 27;
+    int max = histograms["bucket_max"] ? histograms["bucket_max"].as<int>() : 27;
 
-    std::vector<double> bucket = exp2 ? create_linear_buckets(min, max, 1) : create_linear_buckets(min, max, 1);
+    std::vector<double> bucket = exp2 ? create_exp2_buckets(min, max, 1) : create_linear_buckets(min, max, 1);
 
     std::vector<YAML::Node> labels = histograms["labels"].as<std::vector<YAML::Node>>();
 
@@ -69,8 +79,7 @@ error_t Histogram::init() {
     auto& h = hists.Add({}, bucket);
 
     auto handle = [](void* ctx, int cpu, void* data, __u32 size) {
-        ((prometheus::Histogram*)ctx)->Observe(1);
-        // ((prometheus::Histogram*)ctx)->Observe(*reinterpret_cast<unsigned long long*>(data));
+        ((prometheus::Histogram*)ctx)->Observe(*reinterpret_cast<unsigned long long*>(data));
     };
 
     struct perf_buffer_opts opt = {

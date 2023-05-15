@@ -5,6 +5,8 @@
 #include <signal.h>
 #include <stdlib.h>
 
+extern std::shared_ptr<prometheus::Registry> registry;
+
 extern std::string config_path;
 
 extern bool enable_debug;
@@ -12,6 +14,8 @@ extern bool enable_debug;
 extern bool enable_bpf_debug;
 
 extern bool exiting;
+
+extern int port;
 
 static void sig_handler(int sig) {
     exiting = true;
@@ -57,7 +61,17 @@ int main(int argc, char* argv[]) {
 
     register_all_event_handle();
 
-    run_exporter();
+    std::ostringstream oss;
+
+    oss << "127.0.0.1:" << port;
+
+    // create an http server running on port 8080
+    prometheus::Exposer exposer{ oss.str() };
+
+    // ask the exposer to scrape the registry on incoming HTTP requests
+    exposer.RegisterCollectable(registry);
+
+    std::cout << "Server is running at " << BLUE("http://" + oss.str() + "/metrics\n");
 
     observe();
 

@@ -2,8 +2,8 @@ programs:
   - name: tcprtt
     metrics:
       histograms:
-        - name: tcp_retrans_histogram
-          description: TCP retransmissions histogram
+        - name: tcp_rtt_histogram
+          description: TCP round trip time histogram
           bucket_type: exp2
           bucket_min: 0
           bucket_max: 27
@@ -42,6 +42,7 @@ programs:
           description: Tcp connect latency histograms
           bucket_min: 0
           bucket_max: 27
+          bucket_type: exp2
           labels:
             # 观测值放第一个
             - name: delta
