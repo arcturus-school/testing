@@ -20,7 +20,7 @@ struct {
     __uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
     __uint(key_size, sizeof(u32));
     __uint(value_size, sizeof(u32));
-} events SEC(".maps");
+} tcp_retrans_counter SEC(".maps");
 
 static int trace_event(struct pt_regs* ctx, struct sock* sk, struct sk_buff* skb, int type) {
     const struct inet_sock* inet = (struct inet_sock*)(sk);
@@ -41,7 +41,7 @@ static int trace_event(struct pt_regs* ctx, struct sock* sk, struct sk_buff* skb
         BPF_CORE_READ_INTO(&key.daddr_v6, sk, __sk_common.skc_v6_daddr.in6_u.u6_addr32);
     }
 
-    bpf_perf_event_output(ctx, &events, BPF_F_CURRENT_CPU, &key, sizeof(key));
+    bpf_perf_event_output(ctx, &tcp_retrans_counter, BPF_F_CURRENT_CPU, &key, sizeof(key));
 
     return 0;
 }

@@ -17,7 +17,7 @@ struct {
     __uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
     __uint(key_size, sizeof(u32));
     __uint(value_size, sizeof(u32));
-} events SEC(".maps");
+} tcp_connect_latency SEC(".maps");
 
 // 记录开始时间
 static int trace_connect(struct sock* sk) {
@@ -47,7 +47,7 @@ static int handle_tcp_rcv_state_process(void* ctx, struct sock* sk) {
 
     data.delta = delta / 1000U; // 微秒
 
-    bpf_perf_event_output(ctx, &events, BPF_F_CURRENT_CPU, &data, sizeof(data));
+    bpf_perf_event_output(ctx, &tcp_connect_latency, BPF_F_CURRENT_CPU, &data, sizeof(data));
 
     bpf_map_delete_elem(&start, &sk);
 

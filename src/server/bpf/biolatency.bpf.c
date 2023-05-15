@@ -21,7 +21,7 @@ struct {
     __uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
     __uint(key_size, sizeof(u32));
     __uint(value_size, sizeof(u32));
-} events SEC(".maps");
+} bio_latency_histogram SEC(".maps");
 
 struct request_queue___x {
     struct gendisk* disk;
@@ -94,7 +94,7 @@ static int handle_block_rq_complete(u64* ctx, struct request* rq, int error, uns
     data.dev     = disk ? MKDEV(BPF_CORE_READ(disk, major), BPF_CORE_READ(disk, first_minor)) : 0;
     data.op      = BPF_CORE_READ(rq, cmd_flags) & REQ_OP_MASK;
 
-    bpf_perf_event_output(ctx, &events, BPF_F_CURRENT_CPU, &data, sizeof(data));
+    bpf_perf_event_output(ctx, &bio_latency_histogram, BPF_F_CURRENT_CPU, &data, sizeof(data));
 
     bpf_map_delete_elem(&start, &rq);
 

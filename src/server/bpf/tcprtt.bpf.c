@@ -10,7 +10,7 @@ struct {
     __uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
     __uint(key_size, sizeof(u32));
     __uint(value_size, sizeof(u32));
-} events SEC(".maps");
+} tcp_retrans_histogram SEC(".maps");
 
 static int handle_tcp_rcv_established(void* ctx, struct sock* sk) {
     struct data_tcp_rtt_t data = {};
@@ -22,7 +22,7 @@ static int handle_tcp_rcv_established(void* ctx, struct sock* sk) {
     data.rtt = srtt;
 
     // 向用户态推送消息
-    bpf_perf_event_output(ctx, &events, BPF_F_CURRENT_CPU, &data, sizeof(data));
+    bpf_perf_event_output(ctx, &tcp_retrans_histogram, BPF_F_CURRENT_CPU, &data, sizeof(data));
 
     return 0;
 }
