@@ -4,6 +4,40 @@ extern bool exiting;
 
 extern std::shared_ptr<prometheus::Registry> registry;
 
+// 解析 labels
+std::map<std::string, std::string> parse_labels(void* p, Histogram* ctx) {
+    std::map<std::string, std::string> map;
+
+    // 忽略第一个值
+    for (size_t i = 1; i < ctx->names.size(); i++) {
+        std::string        value;
+        unsigned long long key;
+
+        // 如果后期新增 label 数据类型, 需要在这里处理一下
+        if (ctx->types[i] == "u8") {
+            key = read_u8((char*)p + ctx->offsets[i], ctx->bufs[i]);
+        } else if (ctx->types[i] == "u32") {
+            key = read_u32((char*)p + ctx->offsets[i], ctx->bufs[i]);
+        } else if (ctx->types[i] == "u64") {
+            key = read_u64((char*)p + ctx->offsets[i], ctx->bufs[i]);
+        }
+
+        if (ctx->decoders[i]["name"]) {
+            if (ctx->decoders[i]["name"].as<std::string>() == "static_map") {
+                std::cout << key << std::endl;
+                value = static_map(key, ctx->decoders[i]["static_map"]);
+            }
+        } else {
+            value = std::to_string(key);
+        }
+
+        map[ctx->names[i]] = value;
+    }
+
+    return map;
+}
+
+// 生成线性的桶
 std::vector<double> create_linear_buckets(std::int64_t start, std::int64_t end, std::int64_t step) {
     std::vector<double> bucket;
 
@@ -14,6 +48,7 @@ std::vector<double> create_linear_buckets(std::int64_t start, std::int64_t end, 
     return bucket;
 }
 
+// 生成 2 次方间隔的桶
 std::vector<double> create_exp2_buckets(std::int64_t start, std::int64_t end, std::int64_t step) {
     std::vector<double> bucket;
 
@@ -28,25 +63,29 @@ void handle_lost_events(void* ctx, int cpu, __u64 lost_cnt) {
     Log::error("Lost ", lost_cnt, " events on CPU #", cpu);
 }
 
-Histogram::Histogram(int fd, YAML::Node histograms) : offsets{ 0 } {
+Histogram::Histogram(int fd, YAML::Node histograms) {
     this->fd         = fd;
     this->histograms = histograms;
 
     std::vector<YAML::Node> labels = histograms["labels"].as<std::vector<YAML::Node>>();
 
+    for (size_t i = 0; i < labels.size(); i++) {
+        types.push_back(labels[i]["type"].as<std::string>());
+        names.push_back(labels[i]["name"].as<std::string>());
+        decoders.push_back(labels[i]["decoders"]);
+    }
+
+    offsets.push_back(0);
     for (size_t i = 1; i < labels.size(); i++) {
-        std::string type = labels[i - 1]["type"].as<std::string>();
-        offsets.push_back(offsets[i - 1] + get_size_by_type(type));
+        offsets.push_back(offsets[i - 1] + get_size_by_type(types[i - 1]));
     }
 
     for (size_t i = 0; i < labels.size(); i++) {
-        std::string type = labels[i]["type"].as<std::string>();
-        sizes.push_back(get_size_by_type(type));
-    }
+        size_t s = get_size_by_type(types[i]);
 
-    ctx.type      = labels[0]["type"].as<std::string>();
-    ctx.data_size = sizes[0];
-    ctx.buf       = (char*)malloc(sizes[0]);
+        sizes.push_back(s);
+        bufs.push_back((char*)malloc(s)); // 为每个 label 分配一个缓冲区
+    }
 };
 
 void Histogram::observe() {
@@ -70,7 +109,7 @@ error_t Histogram::init() {
     std::string name = histograms["name"].as<std::string>();
     std::string help = histograms["description"].as<std::string>();
 
-    ctx.hists = &prometheus::BuildHistogram().Name(name).Help(help).Register(*registry);
+    hists = &prometheus::BuildHistogram().Name(name).Help(help).Register(*registry);
 
     bool exp2 = false;
 
@@ -83,22 +122,21 @@ error_t Histogram::init() {
 
     bucket = exp2 ? create_exp2_buckets(min, max, 1) : create_linear_buckets(min, max, 1);
 
-    ctx.h = &ctx.hists->Add({}, bucket);
-
     auto handle = [](void* ctx, int cpu, void* data, __u32 size) {
-        struct Context c = *(static_cast<struct Context*>(ctx));
+        Histogram* c = (Histogram*)ctx;
 
-        memcpy(c.buf, data, c.data_size);
-        double res = convert_data_to_double(c.buf, c.type);
-        std::cout << res << std::endl;
+        memcpy(c->bufs[0], data, c->sizes[0]);
+        double value = convert_data_to_double(c->bufs[0], c->types[0]);
 
-        c.h->Observe(res);
+        auto& h = c->hists->Add(parse_labels(data, c), c->bucket);
+
+        h.Observe(value);
     };
 
     struct perf_buffer_opts opt = {
         .sample_cb = handle,
         .lost_cb   = handle_lost_events,
-        .ctx       = &ctx,
+        .ctx       = this,
     };
 
     pb = perf_buffer__new(fd, 16, &opt);
@@ -116,4 +154,8 @@ error_t Histogram::init() {
 
 Histogram::~Histogram() {
     perf_buffer__free(pb);
+
+    for (auto it = bufs.begin(); it != bufs.end(); it++) {
+        free(*it);
+    }
 }

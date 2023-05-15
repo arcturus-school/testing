@@ -56,3 +56,21 @@ double convert_data_to_double(void* p, const std::string& s) {
 
     throw std::runtime_error("Not support type: " + s + ".\n");
 }
+
+unsigned short read_u8(void* p, char* buf) {
+    memcpy(buf, p, sizeof(unsigned short));
+
+    return *reinterpret_cast<unsigned short*>(buf);
+}
+
+unsigned int read_u32(void* p, char* buf) {
+    memcpy(buf, p, sizeof(unsigned int));
+
+    return *reinterpret_cast<unsigned int*>(buf);
+}
+
+unsigned long long read_u64(void* p, char* buf) {
+    memcpy(buf, p, sizeof(unsigned long long));
+
+    return *reinterpret_cast<unsigned long long*>(buf);
+}

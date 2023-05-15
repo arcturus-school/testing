@@ -5,33 +5,32 @@
 #include <prometheus/histogram.h>
 #include <prometheus/registry.h>
 
+#include "../utils/decoder.hpp"
 #include "../utils/log.hpp"
 #include "../utils/tools.hpp"
 #include <bpf/bpf.h>
 #include <bpf/libbpf.h>
 #include <yaml-cpp/yaml.h>
 
-struct Context {
-    char*                                      buf;
-    std::string                                type;
-    int                                        data_size;
-    prometheus::Histogram*                     h;
-    prometheus::Family<prometheus::Histogram>* hists;
-};
-
 class Histogram {
+  public:
     int fd;
 
     YAML::Node histograms;
 
     struct perf_buffer* pb = nullptr;
 
+    prometheus::Family<prometheus::Histogram>* hists;
+
     std::vector<int>    sizes;
     std::vector<int>    offsets;
     std::vector<double> bucket;
-    struct Context      ctx;
+    std::vector<char*>  bufs;
 
-  public:
+    std::vector<YAML::Node>  decoders;
+    std::vector<std::string> types;
+    std::vector<std::string> names;
+
     Histogram(int, YAML::Node);
     ~Histogram();
     error_t init();

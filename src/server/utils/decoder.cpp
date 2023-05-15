@@ -1,6 +1,6 @@
 #include "decoder.hpp"
 
-std::string static_map(int in, YAML::Node& map) {
+std::string static_map(unsigned long long in, const YAML::Node& map) {
     std::string key = std::to_string(in);
 
     if (!map) {
@@ -9,7 +9,11 @@ std::string static_map(int in, YAML::Node& map) {
         return key;
     }
 
-    return map[key].as<std::string>();
+    if (map[key]) {
+        return map[key].as<std::string>();
+    }
+
+    return key;
 }
 
 std::string inet(int af, const void* ip) {
