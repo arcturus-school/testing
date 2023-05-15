@@ -62,6 +62,7 @@ void attach_all_bpf_program() {
 
 // 保存所有直方图数据
 std::vector<Histogram*> hists;
+std::vector<Counter*>   counts;
 
 void register_all_event_handle() {
     error_t err;
@@ -97,11 +98,43 @@ void register_all_event_handle() {
                 hists.push_back(hist);
             }
         }
+
+        if (counters) {
+            Log::log("Register counter of ", p->first, "...\n");
+
+            for (size_t i = 0; i < counters.size(); i++) {
+                std::string map_name = counters[i]["name"].as<std::string>();
+
+                int fd = bpf_object__find_map_fd_by_name(p->second.object, map_name.c_str());
+
+                if (fd < 0) {
+                    Log::warn("There is not map names ", map_name, " in ", p->first, ".\n");
+                    continue;
+                }
+
+                Log::success("Obtain file descriptor of map ", map_name, " in ", p->first, ".\n");
+
+                Counter* c = new Counter(fd, counters[i]);
+
+                err = c->init();
+
+                if (err) {
+                    Log::warn("Failed to initialize listening event of ", map_name, " in ", p->first, ".\n");
+                    continue;
+                }
+
+                counts.push_back(c);
+            }
+        }
     }
 }
 
 void observe() {
     for (auto it = hists.begin(); it != hists.end(); it++) {
+        (*it)->observe();
+    }
+
+    for (auto it = counts.begin(); it != counts.end(); it++) {
         (*it)->observe();
     }
 }
