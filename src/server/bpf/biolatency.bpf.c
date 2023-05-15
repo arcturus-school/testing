@@ -4,6 +4,12 @@ char LICENSE[] SEC("license") = "GPL";
 
 extern int LINUX_KERNEL_VERSION __kconfig; // 内核版本
 
+struct data_disk_latency_t {
+    u32 dev;
+    u8  op;
+    u64 latency;
+};
+
 struct {
     __uint(type, BPF_MAP_TYPE_HASH);
     __uint(max_entries, MAX_ENTRIES);
@@ -12,11 +18,10 @@ struct {
 } start SEC(".maps");
 
 struct {
-    __uint(type, BPF_MAP_TYPE_HASH);
-    __uint(max_entries, (MAX_SLOTS + 1) * MAX_DISKS);
-    __type(key, struct data_disk_latency_t);
-    __type(value, u64);
-} counts SEC(".maps");
+    __uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
+    __uint(key_size, sizeof(u32));
+    __uint(value_size, sizeof(u32));
+} events SEC(".maps");
 
 struct request_queue___x {
     struct gendisk* disk;
@@ -48,7 +53,7 @@ static int __always_inline trace_rq_start(struct request* rq, int issue) {
 }
 
 // 根据内核版本处理块设备请求插入事件
-static int handle_block_rq_insert(__u64* ctx) {
+static int handle_block_rq_insert(u64* ctx) {
     if (LINUX_KERNEL_VERSION < KERNEL_VERSION(5, 11, 0)) {
         return trace_rq_start((void*)ctx[1], false);
     } else {
@@ -56,7 +61,7 @@ static int handle_block_rq_insert(__u64* ctx) {
     }
 }
 
-static int handle_block_rq_issue(__u64* ctx) {
+static int handle_block_rq_issue(u64* ctx) {
     if (LINUX_KERNEL_VERSION < KERNEL_VERSION(5, 11, 0)) {
         return trace_rq_start((void*)ctx[1], true);
     } else {
@@ -64,7 +69,7 @@ static int handle_block_rq_issue(__u64* ctx) {
     }
 }
 
-static int handle_block_rq_complete(struct request* rq, int error, unsigned int nr_bytes) {
+static int handle_block_rq_complete(u64* ctx, struct request* rq, int error, unsigned int nr_bytes) {
     u64* tsp = bpf_map_lookup_elem(&start, &rq);
 
     if (!tsp) return 0;
@@ -72,7 +77,7 @@ static int handle_block_rq_complete(struct request* rq, int error, unsigned int 
     // 获取当前时间戳
     u64 ts = bpf_ktime_get_ns();
 
-    struct data_disk_latency_t d_key = {};
+    struct data_disk_latency_t data = {};
 
     // 获取设备指针
     struct gendisk* disk = get_disk(rq);
@@ -85,11 +90,11 @@ static int handle_block_rq_complete(struct request* rq, int error, unsigned int 
         return 0;
     }
 
-    d_key.latency = delta;
-    d_key.dev     = disk ? MKDEV(BPF_CORE_READ(disk, major), BPF_CORE_READ(disk, first_minor)) : 0;
-    d_key.op      = BPF_CORE_READ(rq, cmd_flags) & REQ_OP_MASK;
+    data.latency = delta / 1000U;
+    data.dev     = disk ? MKDEV(BPF_CORE_READ(disk, major), BPF_CORE_READ(disk, first_minor)) : 0;
+    data.op      = BPF_CORE_READ(rq, cmd_flags) & REQ_OP_MASK;
 
-    increment_map(&counts, &d_key, 1);
+    bpf_perf_event_output(ctx, &events, BPF_F_CURRENT_CPU, &data, sizeof(data));
 
     bpf_map_delete_elem(&start, &rq);
 
@@ -108,5 +113,5 @@ int BPF_PROG(block_rq_issue) {
 
 SEC("raw_tp/block_rq_complete")
 int BPF_PROG(block_rq_complete, struct request* rq, int error, unsigned int nr_bytes) {
-    return handle_block_rq_complete(rq, error, nr_bytes);
+    return handle_block_rq_complete(ctx, rq, error, nr_bytes);
 }

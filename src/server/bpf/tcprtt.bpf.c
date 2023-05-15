@@ -2,6 +2,10 @@
 
 char LICENSE[] SEC("license") = "GPL";
 
+struct data_tcp_rtt_t {
+    u64 rtt; // TCP 往返时间
+};
+
 struct {
     __uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
     __uint(key_size, sizeof(u32));

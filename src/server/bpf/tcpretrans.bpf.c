@@ -2,26 +2,34 @@
 
 char LICENSE[] SEC("license") = "GPL";
 
-// 记录每个 TCP 的重传次数
+struct data_tcp_retrans_counter_t {
+    union {
+        u32 saddr_v4;
+        u8  saddr_v6[16];
+    };
+    union {
+        u32 daddr_v4;
+        u8  daddr_v6[16];
+    };
+    u8  sport;
+    u8  dport;
+    int af;
+};
+
 struct {
-    __uint(type, BPF_MAP_TYPE_HASH);
-    __uint(max_entries, 10240);
-    __type(key, struct data_tcp_retrans_counter_t);
-    __type(value, u64);
-} counts SEC(".maps");
+    __uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
+    __uint(key_size, sizeof(u32));
+    __uint(value_size, sizeof(u32));
+} events SEC(".maps");
 
 static int trace_event(struct pt_regs* ctx, struct sock* sk, struct sk_buff* skb, int type) {
     const struct inet_sock* inet = (struct inet_sock*)(sk);
 
-    u16 sport = BPF_CORE_READ(inet, inet_sport);
-    u16 dport = BPF_CORE_READ(sk, __sk_common.skc_dport);
-
     int family = BPF_CORE_READ(sk, __sk_common.skc_family);
 
-    // 记录重传次数
     struct data_tcp_retrans_counter_t key = {};
 
-    key.sport = BPF_CORE_READ(sk, __sk_common.skc_num);
+    key.sport = BPF_CORE_READ(inet, inet_sport);
     key.dport = BPF_CORE_READ(sk, __sk_common.skc_dport);
     key.af    = family;
 
@@ -33,7 +41,7 @@ static int trace_event(struct pt_regs* ctx, struct sock* sk, struct sk_buff* skb
         BPF_CORE_READ_INTO(&key.daddr_v6, sk, __sk_common.skc_v6_daddr.in6_u.u6_addr32);
     }
 
-    increment_map(&counts, &key, 1);
+    bpf_perf_event_output(ctx, &events, BPF_F_CURRENT_CPU, &key, sizeof(key));
 
     return 0;
 }
