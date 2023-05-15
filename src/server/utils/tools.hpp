@@ -2,6 +2,7 @@
 #define _TOOLS_H
 
 #include <map>
+#include <stdexcept>
 #include <string>
 
 size_t get_size_by_type(std::string&);
