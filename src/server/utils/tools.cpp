@@ -28,3 +28,31 @@ size_t get_size_by_type(std::string& type) {
 
     throw std::runtime_error("Not support type: " + type + ".\n");
 }
+
+double convert_data_to_double(void* p, const std::string& s) {
+    if (s == "u64") {
+        return static_cast<double>(*reinterpret_cast<unsigned long long*>(p));
+    }
+
+    if (s == "u32") {
+        return static_cast<double>(*reinterpret_cast<unsigned int*>(p));
+    }
+
+    if (s == "u8") {
+        return static_cast<double>(*reinterpret_cast<unsigned short*>(p));
+    }
+
+    if (s == "int") {
+        return static_cast<double>(*reinterpret_cast<int*>(p));
+    }
+
+    if (s == "short") {
+        return static_cast<double>(*reinterpret_cast<short*>(p));
+    }
+
+    if (s == "double") {
+        return static_cast<double>(*reinterpret_cast<double*>(p));
+    }
+
+    throw std::runtime_error("Not support type: " + s + ".\n");
+}

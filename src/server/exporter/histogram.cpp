@@ -28,9 +28,25 @@ void handle_lost_events(void* ctx, int cpu, __u64 lost_cnt) {
     Log::error("Lost ", lost_cnt, " events on CPU #", cpu);
 }
 
-Histogram::Histogram(int fd, YAML::Node histograms) {
+Histogram::Histogram(int fd, YAML::Node histograms) : offsets{ 0 } {
     this->fd         = fd;
     this->histograms = histograms;
+
+    std::vector<YAML::Node> labels = histograms["labels"].as<std::vector<YAML::Node>>();
+
+    for (size_t i = 1; i < labels.size(); i++) {
+        std::string type = labels[i - 1]["type"].as<std::string>();
+        offsets.push_back(offsets[i - 1] + get_size_by_type(type));
+    }
+
+    for (size_t i = 0; i < labels.size(); i++) {
+        std::string type = labels[i]["type"].as<std::string>();
+        sizes.push_back(get_size_by_type(type));
+    }
+
+    ctx.type      = labels[0]["type"].as<std::string>();
+    ctx.data_size = sizes[0];
+    ctx.buf       = (char*)malloc(sizes[0]);
 };
 
 void Histogram::observe() {
@@ -54,7 +70,7 @@ error_t Histogram::init() {
     std::string name = histograms["name"].as<std::string>();
     std::string help = histograms["description"].as<std::string>();
 
-    auto& hists = prometheus::BuildHistogram().Name(name).Help(help).Register(*registry);
+    ctx.hists = &prometheus::BuildHistogram().Name(name).Help(help).Register(*registry);
 
     bool exp2 = false;
 
@@ -65,27 +81,24 @@ error_t Histogram::init() {
     int min = histograms["bucket_min"] ? histograms["bucket_min"].as<int>() : 0;
     int max = histograms["bucket_max"] ? histograms["bucket_max"].as<int>() : 27;
 
-    std::vector<double> bucket = exp2 ? create_exp2_buckets(min, max, 1) : create_linear_buckets(min, max, 1);
+    bucket = exp2 ? create_exp2_buckets(min, max, 1) : create_linear_buckets(min, max, 1);
 
-    std::vector<YAML::Node> labels = histograms["labels"].as<std::vector<YAML::Node>>();
-
-    std::vector<int> offsets = { 0 };
-
-    for (size_t i = 1; i < labels.size(); i++) {
-        std::string type = labels[i - 1]["type"].as<std::string>();
-        offsets.push_back(offsets[i - 1] + get_size_by_type(type));
-    }
-
-    auto& h = hists.Add({}, bucket);
+    ctx.h = &ctx.hists->Add({}, bucket);
 
     auto handle = [](void* ctx, int cpu, void* data, __u32 size) {
-        ((prometheus::Histogram*)ctx)->Observe(*reinterpret_cast<unsigned long long*>(data));
+        struct Context c = *(static_cast<struct Context*>(ctx));
+
+        memcpy(c.buf, data, c.data_size);
+        double res = convert_data_to_double(c.buf, c.type);
+        std::cout << res << std::endl;
+
+        c.h->Observe(res);
     };
 
     struct perf_buffer_opts opt = {
         .sample_cb = handle,
         .lost_cb   = handle_lost_events,
-        .ctx       = &h,
+        .ctx       = &ctx,
     };
 
     pb = perf_buffer__new(fd, 16, &opt);

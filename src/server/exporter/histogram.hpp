@@ -11,12 +11,25 @@
 #include <bpf/libbpf.h>
 #include <yaml-cpp/yaml.h>
 
+struct Context {
+    char*                                      buf;
+    std::string                                type;
+    int                                        data_size;
+    prometheus::Histogram*                     h;
+    prometheus::Family<prometheus::Histogram>* hists;
+};
+
 class Histogram {
     int fd;
 
     YAML::Node histograms;
 
     struct perf_buffer* pb = nullptr;
+
+    std::vector<int>    sizes;
+    std::vector<int>    offsets;
+    std::vector<double> bucket;
+    struct Context      ctx;
 
   public:
     Histogram(int, YAML::Node);

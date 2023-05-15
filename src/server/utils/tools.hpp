@@ -7,4 +7,6 @@
 
 size_t get_size_by_type(std::string&);
 
+double convert_data_to_double(void* p, const std::string& s);
+
 #endif
