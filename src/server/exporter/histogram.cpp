@@ -11,21 +11,31 @@ std::map<std::string, std::string> parse_labels(void* p, Histogram* ctx) {
     // 忽略第一个值
     for (size_t i = 1; i < ctx->names.size(); i++) {
         std::string        value;
-        unsigned long long key;
-
-        // 如果后期新增 label 数据类型, 需要在这里处理一下
-        if (ctx->types[i] == "u8") {
-            key = read_u8((char*)p + ctx->offsets[i], ctx->bufs[i]);
-        } else if (ctx->types[i] == "u32") {
-            key = read_u32((char*)p + ctx->offsets[i], ctx->bufs[i]);
-        } else if (ctx->types[i] == "u64") {
-            key = read_u64((char*)p + ctx->offsets[i], ctx->bufs[i]);
-        }
+        unsigned long long key = read_data_by_type((char*)p + ctx->offsets[i], ctx->types[i], ctx->bufs[i]);
 
         if (ctx->decoders[i]["name"]) {
-            if (ctx->decoders[i]["name"].as<std::string>() == "static_map") {
-                std::cout << key << std::endl;
+            std::string decoder = ctx->decoders[i]["name"].as<std::string>();
+
+            if (decoder == "static_map") {
                 value = static_map(key, ctx->decoders[i]["static_map"]);
+            } else if (decoder == "inet") {
+                int af;
+
+                auto it = std::find(ctx->names.begin(), ctx->names.end(), "protocol");
+
+                if (it != ctx->names.end()) {
+                    int idx = std::distance(ctx->names.begin(), it);
+
+                    af = read_data_by_type((char*)p + ctx->offsets[idx], ctx->types[idx], ctx->bufs[idx]);
+
+                    value = inet(af, (char*)p + ctx->offsets[i]);
+                } else {
+                    Log::warn("Labels missing `protocol`.");
+                    value = std::to_string(key);
+                }
+            } else {
+                Log::error("Not support decoder.\n");
+                value = std::to_string(key);
             }
         } else {
             value = std::to_string(key);
