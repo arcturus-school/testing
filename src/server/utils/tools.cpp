@@ -74,3 +74,26 @@ unsigned long long read_u64(void* p, char* buf) {
 
     return *reinterpret_cast<unsigned long long*>(buf);
 }
+
+int read_int(void* p, char* buf) {
+    memcpy(buf, p, sizeof(int));
+
+    return *reinterpret_cast<int*>(buf);
+}
+
+// 如果后期新增 label 数据类型, 需要在这里处理一下
+unsigned long long read_data_by_type(char* p, const std::string& type, char* buf) {
+    unsigned long long key = 0;
+
+    if (type == "u8") {
+        key = read_u8(p, buf);
+    } else if (type == "u32") {
+        key = read_u32(p, buf);
+    } else if (type == "u64") {
+        key = read_u64(p, buf);
+    } else if (type == "int") {
+        key = read_int(p, buf);
+    }
+
+    return key;
+}

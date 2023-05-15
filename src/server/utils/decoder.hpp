@@ -3,6 +3,7 @@
 
 #include "log.hpp"
 #include <arpa/inet.h>
+#include <cstring>
 #include <string>
 #include <yaml-cpp/yaml.h>
 
