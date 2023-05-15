@@ -4,10 +4,6 @@ char LICENSE[] SEC("license") = "GPL";
 
 extern int LINUX_KERNEL_VERSION __kconfig; // 内核版本
 
-const volatile bool k_queued = false;      // 是否包含操作系统排队时间
-const volatile bool k_ms     = false;      // 延迟单位是否是毫秒
-const volatile u32  k_dev    = 0;          // 仅跟踪某个磁盘
-
 struct {
     __uint(type, BPF_MAP_TYPE_HASH);
     __uint(max_entries, MAX_ENTRIES);
@@ -18,9 +14,9 @@ struct {
 struct {
     __uint(type, BPF_MAP_TYPE_HASH);
     __uint(max_entries, (MAX_SLOTS + 1) * MAX_DISKS);
-    __type(key, struct disk_latency_key_t);
+    __type(key, struct data_disk_latency_t);
     __type(value, u64);
-} bio_latency SEC(".maps");
+} counts SEC(".maps");
 
 struct request_queue___x {
     struct gendisk* disk;
@@ -43,20 +39,7 @@ static __always_inline struct gendisk* get_disk(void* request) {
 }
 
 static int __always_inline trace_rq_start(struct request* rq, int issue) {
-    if (issue && k_queued && BPF_CORE_READ(rq, q, elevator)) return 0;
-
     u64 ts = bpf_ktime_get_ns();
-
-    // 磁盘过滤
-    if (k_dev) {
-        struct gendisk* disk = get_disk(rq);
-
-        u32 dev = disk ? MKDEV(BPF_CORE_READ(disk, major), BPF_CORE_READ(disk, first_minor)) : 0;
-
-        if (k_dev != dev) {
-            return 0;
-        }
-    }
 
     // 保存请求开始时间
     bpf_map_update_elem(&start, &rq, &ts, 0);
@@ -89,7 +72,7 @@ static int handle_block_rq_complete(struct request* rq, int error, unsigned int 
     // 获取当前时间戳
     u64 ts = bpf_ktime_get_ns();
 
-    struct disk_latency_key_t d_key = {};
+    struct data_disk_latency_t d_key = {};
 
     // 获取设备指针
     struct gendisk* disk = get_disk(rq);
@@ -102,15 +85,11 @@ static int handle_block_rq_complete(struct request* rq, int error, unsigned int 
         return 0;
     }
 
-    if (k_ms) {
-        delta /= 1000000U;
-    }
-
     d_key.latency = delta;
     d_key.dev     = disk ? MKDEV(BPF_CORE_READ(disk, major), BPF_CORE_READ(disk, first_minor)) : 0;
     d_key.op      = BPF_CORE_READ(rq, cmd_flags) & REQ_OP_MASK;
 
-    increment_map(&bio_latency, &d_key, 1);
+    increment_map(&counts, &d_key, 1);
 
     bpf_map_delete_elem(&start, &rq);
 
