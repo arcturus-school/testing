@@ -5,9 +5,9 @@ char LICENSE[] SEC("license") = "GPL";
 extern int LINUX_KERNEL_VERSION __kconfig; // 内核版本
 
 struct data_disk_latency_t {
+    u64 latency;
     u32 dev;
     u8  op;
-    u64 latency;
 };
 
 struct {
