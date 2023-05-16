@@ -41,7 +41,7 @@ cd libbpf/src
 
 make
 
-make install
+sudo make install
 
 ## bpftool
 ## https://github.com/libbpf/bpftool/blob/master/README.md
@@ -83,7 +83,7 @@ git submodule update
 
 mkdir build; cd build
 
-cmake .. -DENABLE_PUSH=OFF -DENABLE_COMPRESSION=OFF
+cmake .. -DBUILD_SHARED_LIBS=ON -DENABLE_PUSH=OFF -DENABLE_COMPRESSION=OFF
 
 cmake --build .
 
