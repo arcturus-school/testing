@@ -6,6 +6,8 @@
 
 extern bool exiting;
 
+extern std::vector<std::thread> ts;
+
 class Metric {
   public:
     std::vector<Label> labels;
@@ -59,20 +61,24 @@ class Metric {
             return;
         }
 
-        int err;
+        ts.push_back(std::thread(
+            [](bool exiting, Metric* ctx) {
+                int err;
 
-        while (true) {
-            err = perf_buffer__poll(pb, 0);
+                while (true) {
+                    err = perf_buffer__poll(ctx->pb, 0);
 
-            if (err < 0 && err != -EINTR) {
-                fprintf(stderr, "Error polling perf buffer: %s\n", strerror(-err));
-                break;
-            }
+                    if (err < 0 && err != -EINTR) {
+                        fprintf(stderr, "Error polling perf buffer: %s\n", strerror(-err));
+                        break;
+                    }
 
-            if (exiting) {
-                break;
-            }
-        }
+                    if (exiting) {
+                        break;
+                    }
+                }
+            },
+            exiting, this));
     }
 
     virtual error_t init(bpf_object*) {
