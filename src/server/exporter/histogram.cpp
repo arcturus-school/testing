@@ -58,12 +58,6 @@ error_t Histogram::init(bpf_object* obj) {
         Log::error("[In ", m->name, "] lost ", lost_cnt, " events on CPU #", cpu);
     };
 
-    struct perf_buffer_opts opt = {
-        .sample_cb = handle,
-        .lost_cb   = handle_lost,
-        .ctx       = this,
-    };
-
     int fd = bpf_object__find_map_fd_by_name(obj, name.c_str());
 
     if (fd < 0) {
@@ -73,7 +67,7 @@ error_t Histogram::init(bpf_object* obj) {
 
     Log::success("Obtain file descriptor of map ", name, ".\n");
 
-    pb = perf_buffer__new(fd, 16, &opt);
+    pb = perf_buffer__new(fd, 16, handle, handle_lost, this, nullptr);
 
     if (!pb) {
         fprintf(stderr, "Failed to open perf buffer: %d\n", -errno);
