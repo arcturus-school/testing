@@ -39,7 +39,7 @@ double convert_data_to_double(void* p, const std::string& s) {
     }
 
     if (s == "u8") {
-        return static_cast<double>(*reinterpret_cast<unsigned short*>(p));
+        return static_cast<double>(*reinterpret_cast<unsigned char*>(p));
     }
 
     if (s == "int") {
@@ -60,7 +60,7 @@ double convert_data_to_double(void* p, const std::string& s) {
 unsigned short read_u8(void* p, char* buf) {
     memcpy(buf, p, sizeof(unsigned short));
 
-    return *reinterpret_cast<unsigned short*>(buf);
+    return *reinterpret_cast<unsigned char*>(buf);
 }
 
 unsigned int read_u32(void* p, char* buf) {
