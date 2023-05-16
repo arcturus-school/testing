@@ -5,7 +5,7 @@
 #include <signal.h>
 #include <stdlib.h>
 
-extern std::shared_ptr<prometheus::Registry> registry;
+auto registry = std::make_shared<prometheus::Registry>();
 
 extern std::string config_path;
 
@@ -49,17 +49,19 @@ int main(int argc, char* argv[]) {
     signal(SIGINT, sig_handler);
 
     // 加载 bpf 程序
-    err = open_all_bpf_object();
+    err = open_all_bpf_objects();
 
     if (err) return EXIT_FAILURE;
 
-    err = load_all_bpf_object();
+    err = load_all_bpf_objects();
 
     if (err) return EXIT_FAILURE;
 
-    attach_all_bpf_program();
+    attach_all_bpf_programs();
 
-    register_all_event_handle();
+    err = register_all_event_handles();
+
+    if (err) return EXIT_FAILURE;
 
     std::ostringstream oss;
 
@@ -74,9 +76,6 @@ int main(int argc, char* argv[]) {
     std::cout << "Server is running at " << BLUE("http://" + oss.str() + "/metrics\n");
 
     observe();
-
-    // 一些清理工作
-    close_bpf_object();
 
     return EXIT_SUCCESS;
 }
