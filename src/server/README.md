@@ -35,6 +35,8 @@ sudo apt-get update
 sudo apt install clang cmake llvm git libelf-dev libfl-dev make \
 	pkg-config curl libcurl4-openssl-dev gcc-multilib -y 
 
+# 不要安装 libbpf-dev, 会有 bug...（ ´д｀）ゞ
+
 git clone https://github.com/libbpf/libbpf.git
 
 cd libbpf/src
@@ -55,6 +57,12 @@ git submodule update --init
 cd src
 
 sudo make install
+
+# 这步可能不需要, 如果运行程序时出现 
+# error while loading shared libraries: libbpf.so.1: cannot open shared object file: No such file or directory
+# 可能是 libbpf.so.1 被装到 /usr/lib64 下了, 而非 /usr/lib 里, 
+# 因此将新的共享文件目录 /usr/lib64 加入 /etc/ld.so.conf 里
+sudo sh -c "echo /usr/lib64 >> /etc/ld.so.conf"
 
 ## g++
 sudo apt install g++
