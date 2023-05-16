@@ -1,22 +1,39 @@
 #include "decoder.hpp"
 
-std::string static_map(_u64_m in, const YAML::Node& map) {
+Decoder::Decoder(const YAML::Node& decoder) {
+    if (!decoder || !decoder["name"]) {
+        name = "unknown";
+        return;
+    }
+
+    name = decoder["name"].as<std::string>();
+
+    if (name == "static_map") {
+        if (!decoder["static_map"]) {
+            Log::warn("static_map is missing.\n");
+        }
+
+        map = decoder["static_map"].as<std::map<std::string, std::string>>();
+    }
+}
+
+std::string Decoder::static_map(_u64_m in) {
     std::string key = std::to_string(in);
 
-    if (!map) {
+    if (map.empty()) {
         Log::warn("Empty mapping.\n");
 
         return key;
     }
 
-    if (map[key]) {
-        return map[key].as<std::string>();
+    if (map.find(key) != map.end()) {
+        return map[key];
     }
 
     return key;
 }
 
-std::string inet(int af, const void* ip) {
+std::string Decoder::inet(int af, const void* ip) {
     char buf[INET6_ADDRSTRLEN];
 
     union {

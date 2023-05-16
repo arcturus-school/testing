@@ -12,7 +12,7 @@ class Program {
 
     bpf_object* obj = nullptr;
 
-    std::vector<Metric> metrics;
+    std::vector<Metric*> metrics;
 
     Program(const YAML::Node&);
 

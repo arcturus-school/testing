@@ -3,20 +3,20 @@
 Program::Program(const YAML::Node& prog) {
     name = prog["name"] ? prog["name"].as<std::string>() : "unknown";
 
-    Log::log("Program ", name);
+    Log::log("Program ", name, ".\n");
 
     if (prog["metrics"]) {
-        YAML::Node metrics = prog["metrics"];
+        const YAML::Node& m = prog["metrics"];
 
-        if (metrics["histograms"]) {
-            for (size_t i = 0; i < metrics["histograms"].size(); i++) {
-                metrics.push_back(Histogram(metrics["histograms"][i]));
+        if (m["histograms"]) {
+            for (size_t i = 0; i < m["histograms"].size(); i++) {
+                metrics.push_back(new Histogram(m["histograms"][i]));
             }
         }
 
-        if (metrics["counters"]) {
-            for (size_t i = 0; i < metrics["counters"].size(); i++) {
-                metrics.push_back(Counter(metrics["counters"][i]));
+        if (m["counters"]) {
+            for (size_t i = 0; i < m["counters"].size(); i++) {
+                metrics.push_back(new Counter(m["counters"][i]));
             }
         }
     }
@@ -24,7 +24,7 @@ Program::Program(const YAML::Node& prog) {
 
 void Program::observe() {
     for (auto it = metrics.begin(); it != metrics.end(); it++) {
-        (*it).observe();
+        (*it)->observe();
     }
 }
 
@@ -64,6 +64,8 @@ error_t Program::open_obj() {
     }
 
     Log::success("Open " + name + " bpf object.\n");
+
+    return 0;
 }
 
 void Program::attach_obj() {
@@ -88,7 +90,7 @@ error_t Program::init() {
     int err;
 
     for (auto it = metrics.begin(); it != metrics.end(); it++) {
-        err = (*it).init(obj);
+        err = (*it)->init(obj);
 
         if (err) return INIT_FAILED;
     }

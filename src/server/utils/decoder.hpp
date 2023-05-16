@@ -3,10 +3,23 @@
 
 #include "log.hpp"
 
-// 根据键获取值
-std::string static_map(_u64_m, const YAML::Node&);
+class Decoder {
+  public:
+    std::string name;
 
-// 数字 IP 转字符串
-std::string inet(int, const void*);
+    std::map<std::string, std::string> map;
+
+    // 根据键获取值
+    std::string static_map(_u64_m);
+
+    // 数字 IP 转字符串
+    static std::string inet(int, const void*);
+
+    Decoder(const YAML::Node&);
+
+    bool has() {
+        return name != "unknown";
+    }
+};
 
 #endif
