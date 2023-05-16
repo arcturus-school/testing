@@ -18,23 +18,23 @@ programs:
           labels:
             - name: saddr
               type: u8[16]
-              decoders:
-                - name: inet # 将 IP 转成字符串
+              decoder:
+                name: inet # 将 IP 转成字符串
             - name: daddr
               type: u8[16]
-              decoders:
-                - name: inet # 将 IP 转成字符串
+              decoder:
+                name: inet # 将 IP 转成字符串
             - name: sport
               type: u8
             - name: dport
               type: u8
             - name: protocol
               type: int
-              decoders:
-                - name: static_map
-                  static_map:
-                    2: IPv4
-                    10: IPv6
+              decoder:
+                name: static_map
+                static_map:
+                  2: IPv4
+                  10: IPv6
   - name: tcpconnlat
     metrics:
       histograms:
@@ -62,13 +62,13 @@ programs:
               type: u32
             - name: op # operation
               type: u8
-              decoders:
-                - name: static_map
-                  type:
-                  static_map:
-                    0: read
-                    1: write
-                    2: flush
+              decoder:
+                name: static_map
+                static_map:
+                  0: read
+                  1: write
+                  2: flush
+                  3: insert
 
 server:
   port: 8080 # 不写默认 8080
