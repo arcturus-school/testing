@@ -1,140 +1,51 @@
 #include "exporter.hpp"
 
-// 保存所有 metrics 和 object
-std::map<std::string, Program> programs;
+std::vector<Program> programs;
 
-auto registry = std::make_shared<prometheus::Registry>();
+error_t open_all_bpf_objects() {
+    int err;
 
-error_t open_all_bpf_object() {
     for (auto it = programs.begin(); it != programs.end(); it++) {
-        std::string file = "dist/" + it->first + ".bpf.o";
+        err = (*it).open_obj();
 
-        bpf_object* obj = bpf_object__open(file.c_str());
-
-        if (!obj) {
-            Log::error("Failed to open ", it->first, " bpf object.\n");
-            close_bpf_object();
-            return -1;
-        }
-
-        Log::success("Open " + it->first + " bpf object.\n");
-
-        it->second.object = obj;
+        if (err) return err;
     }
 
     return 0;
 }
 
-error_t load_all_bpf_object() {
+error_t load_all_bpf_objects() {
+    int err;
+
     for (auto it = programs.begin(); it != programs.end(); it++) {
-        error_t err = bpf_object__load(it->second.object);
+        err = (*it).load_obj();
 
-        if (err) {
-            Log::error("Failed to load ", it->first, " bpf object.\n");
-            close_bpf_object();
-            return -1;
-        }
-
-        Log::success("Load " + it->first + " bpf object.\n");
+        if (err) return err;
     }
 
     return 0;
 }
 
-void close_bpf_object() {
-    for (auto it = programs.begin(); it != programs.end(); ++it) {
-        if (it->second.object) {
-            bpf_object__close(it->second.object);
-            Log::log(it->first, "_bpf_object is closed.\n");
-        }
-    }
-}
-
-void attach_all_bpf_program() {
-    struct bpf_program* prog;
-
+void attach_all_bpf_programs() {
     for (auto it = programs.begin(); it != programs.end(); it++) {
-        bpf_object__for_each_program(prog, it->second.object) {
-            bpf_program__attach(prog);
-        }
+        (*it).attach_obj();
     }
 }
 
-// 保存所有直方图数据
-std::vector<Histogram*> hists;
-std::vector<Counter*>   counts;
-
-void register_all_event_handle() {
+error_t register_all_event_handles() {
     error_t err;
 
-    for (auto p = programs.begin(); p != programs.end(); p++) {
-        auto histograms = p->second.metrics["histograms"];
-        auto counters   = p->second.metrics["counters"];
+    for (auto it = programs.begin(); it != programs.end(); it++) {
+        err = (*it).init();
 
-        if (histograms) {
-            Log::log("Register histograms of ", p->first, "...\n");
-
-            for (size_t i = 0; i < histograms.size(); i++) {
-                std::string map_name = histograms[i]["name"].as<std::string>();
-
-                int fd = bpf_object__find_map_fd_by_name(p->second.object, map_name.c_str());
-
-                if (fd < 0) {
-                    Log::warn("There is not map names ", map_name, " in ", p->first, ".\n");
-                    continue;
-                }
-
-                Log::success("Obtain file descriptor of map ", map_name, " in ", p->first, ".\n");
-
-                Histogram* hist = new Histogram(fd, histograms[i]);
-
-                err = hist->init();
-
-                if (err) {
-                    Log::warn("Failed to initialize listening event of ", map_name, " in ", p->first, ".\n");
-                    continue;
-                }
-
-                hists.push_back(hist);
-            }
-        }
-
-        if (counters) {
-            Log::log("Register counter of ", p->first, "...\n");
-
-            for (size_t i = 0; i < counters.size(); i++) {
-                std::string map_name = counters[i]["name"].as<std::string>();
-
-                int fd = bpf_object__find_map_fd_by_name(p->second.object, map_name.c_str());
-
-                if (fd < 0) {
-                    Log::warn("There is not map names ", map_name, " in ", p->first, ".\n");
-                    continue;
-                }
-
-                Log::success("Obtain file descriptor of map ", map_name, " in ", p->first, ".\n");
-
-                Counter* c = new Counter(fd, counters[i]);
-
-                err = c->init();
-
-                if (err) {
-                    Log::warn("Failed to initialize listening event of ", map_name, " in ", p->first, ".\n");
-                    continue;
-                }
-
-                counts.push_back(c);
-            }
-        }
+        if (err) return err;
     }
+
+    return 0;
 }
 
 void observe() {
-    for (auto it = hists.begin(); it != hists.end(); it++) {
-        (*it)->observe();
-    }
-
-    for (auto it = counts.begin(); it != counts.end(); it++) {
-        (*it)->observe();
+    for (auto it = programs.begin(); it != programs.end(); it++) {
+        (*it).observe();
     }
 }
