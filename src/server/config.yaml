@@ -71,4 +71,4 @@ programs:
                   3: insert
 
 server:
-  port: 8080 # 不写默认 8080
+  port: 8089 # 不写默认 8089
