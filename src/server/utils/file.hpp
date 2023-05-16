@@ -1,8 +1,7 @@
 #ifndef _FILE_H
 #define _FILE_H
 
-#include <filesystem>
-#include <string>
+#include "std.hpp"
 
 // 获取绝对路径
 std::string get_absolute_path(const std::string& file);
