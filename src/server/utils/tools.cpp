@@ -1,15 +1,47 @@
 #include "tools.hpp"
 
 std::map<std::string, size_t> size_map = {
-    { "u64", sizeof(unsigned long long) },
-    { "u32", sizeof(unsigned int) },
-    { "u8", sizeof(unsigned char) },
+    { "u64", sizeof(_u64_m) },
+    { "u32", sizeof(_u32_m) },
+    { "u8", sizeof(_u8_m) },
     { "int", sizeof(int) },
     { "double", sizeof(double) },
     { "char", sizeof(char) },
+    { "short", sizeof(short) },
 };
 
-size_t get_size_by_type(std::string& type) {
+std::map<std::string, TYPES> type_num_map = {
+    { "u64", TYPES::E_U64 },
+    { "u32", TYPES::E_U32 },
+    { "u8", TYPES::E_U8 },
+    { "int", TYPES::E_INT },
+    { "double", TYPES::E_DOUBLE },
+    { "char", TYPES::E_CHAR },
+    { "short", TYPES::E_SHORT },
+};
+
+bool is_array(const std::string& type) {
+    std::string::size_type left  = type.find("[");
+    std::string::size_type right = type.find("]");
+
+    if (left != std::string::npos && right != std::string::npos) {
+        return true;
+    }
+
+    return false;
+}
+
+TYPES get_type_num(const std::string& type) {
+    if (type_num_map.find(type) != type_num_map.end()) {
+        return type_num_map[type];
+    }
+
+    if (is_array(type)) return TYPES::E_ARRAY;
+
+    return TYPES::E_UNKNOWN;
+}
+
+size_t get_size_by_type(const std::string& type) {
     if (size_map.find(type) != size_map.end()) {
         return size_map[type];
     }
@@ -29,75 +61,90 @@ size_t get_size_by_type(std::string& type) {
     throw std::runtime_error("Not support type: " + type + ".\n");
 }
 
-double convert_data_to_double(void* p, const std::string& s) {
-    if (s == "u64") {
-        return static_cast<double>(*reinterpret_cast<unsigned long long*>(p));
-    }
-
-    if (s == "u32") {
-        return static_cast<double>(*reinterpret_cast<unsigned int*>(p));
-    }
-
-    if (s == "u8") {
-        return static_cast<double>(*reinterpret_cast<unsigned char*>(p));
-    }
-
-    if (s == "int") {
+double to_double(void* p, TYPES t) {
+    switch (t) {
+    case TYPES::E_U64:
+        return static_cast<double>(*reinterpret_cast<_u64_m*>(p));
+    case TYPES::E_U32:
+        return static_cast<double>(*reinterpret_cast<_u32_m*>(p));
+    case TYPES::E_U8:
+        return static_cast<double>(*reinterpret_cast<_u8_m*>(p));
+    case TYPES::E_INT:
         return static_cast<double>(*reinterpret_cast<int*>(p));
-    }
-
-    if (s == "short") {
-        return static_cast<double>(*reinterpret_cast<short*>(p));
-    }
-
-    if (s == "double") {
+    case TYPES::E_DOUBLE:
         return static_cast<double>(*reinterpret_cast<double*>(p));
+    case TYPES::E_CHAR:
+        return static_cast<double>(*reinterpret_cast<short*>(p));
+    default:
+        throw std::runtime_error("Not support type num: " + std::to_string(t) + ".\n");
     }
-
-    throw std::runtime_error("Not support type: " + s + ".\n");
 }
 
-unsigned short read_u8(void* p, char* buf) {
-    memcpy(buf, p, sizeof(unsigned short));
-
-    return *reinterpret_cast<unsigned char*>(buf);
+_u8_m read_u8(void* p, char* buf) {
+    memcpy(buf, p, sizeof(_u8_m));
+    return *reinterpret_cast<_u8_m*>(buf);
 }
 
-unsigned int read_u32(void* p, char* buf) {
-    memcpy(buf, p, sizeof(unsigned int));
-
-    return *reinterpret_cast<unsigned int*>(buf);
+_u32_m read_u32(void* p, char* buf) {
+    memcpy(buf, p, sizeof(_u32_m));
+    return *reinterpret_cast<_u32_m*>(buf);
 }
 
-unsigned long long read_u64(void* p, char* buf) {
-    memcpy(buf, p, sizeof(unsigned long long));
-
-    return *reinterpret_cast<unsigned long long*>(buf);
+_u64_m read_u64(void* p, char* buf) {
+    memcpy(buf, p, sizeof(_u64_m));
+    return *reinterpret_cast<_u64_m*>(buf);
 }
 
 int read_int(void* p, char* buf) {
     memcpy(buf, p, sizeof(int));
-
     return *reinterpret_cast<int*>(buf);
 }
 
-// 如果后期新增 label 数据类型, 需要在这里处理一下
-unsigned long long read_data_by_type(char* p, const std::string& type, char* buf) {
-    unsigned long long key = 0;
+double read_double(void* p, char* buf) {
+    memcpy(buf, p, sizeof(double));
+    return *reinterpret_cast<double*>(buf);
+}
 
-    if (type == "u8") {
-        key = read_u8(p, buf);
-    } else if (type == "u32") {
-        key = read_u32(p, buf);
-    } else if (type == "u64") {
+char read_char(void* p, char* buf) {
+    memcpy(buf, p, sizeof(char));
+    return *reinterpret_cast<char*>(buf);
+}
+
+_u64_m read_data_by_type(char* p, TYPES t, char* buf) {
+    _u64_m key = 0;
+
+    switch (t) {
+    case TYPES::E_U64:
         key = read_u64(p, buf);
-    } else if (type == "int") {
+        break;
+    case TYPES::E_U32:
+        key = read_u32(p, buf);
+        break;
+    case TYPES::E_U8:
+        key = read_u8(p, buf);
+        break;
+    case TYPES::E_INT:
         key = read_int(p, buf);
+        break;
+    case TYPES::E_DOUBLE:
+        key = read_double(p, buf);
+        break;
+    case TYPES::E_CHAR:
+        key = read_char(p, buf);
+        break;
+    default:
+        break;
     }
 
     return key;
 }
 
-void handle_lost_events(void* ctx, int cpu, unsigned long long lost_cnt) {
-    Log::error("Lost ", lost_cnt, " events on CPU #", cpu);
+struct Test {
+    char a;
+    int  b;
+};
+
+int alignment() {
+    // 如果返回 4, 则说明数据需要以 4 的整数倍对齐
+    return offsetof(Test, b);
 }
