@@ -1,6 +1,6 @@
 #include "decoder.hpp"
 
-std::string static_map(unsigned long long in, const YAML::Node& map) {
+std::string static_map(_u64_m in, const YAML::Node& map) {
     std::string key = std::to_string(in);
 
     if (!map) {
@@ -24,16 +24,20 @@ std::string inet(int af, const void* ip) {
         struct in6_addr x6;
     } addr;
 
-    // 这里没有根据 config 的 type 来定大小, 而是一开始就确定的
-    if (af == AF_INET) {
-        addr.x4.s_addr = *(unsigned int*)ip;
+    switch (af) {
+    case AF_INET: {
+        addr.x4.s_addr = *(_u32_m*)ip;
         inet_ntop(AF_INET, &addr, buf, INET_ADDRSTRLEN);
-    } else if (af == AF_INET6) {
-        memcpy(&addr.x6.s6_addr, (unsigned short*)ip, sizeof(addr.x6.s6_addr));
+        break;
+    }
+    case AF_INET6: {
+        memcpy(&addr.x6.s6_addr, (_u8_m*)ip, sizeof(addr.x6.s6_addr));
         inet_ntop(AF_INET6, &addr, buf, INET6_ADDRSTRLEN);
-    } else {
+        break;
+    }
+    default:
         Log::warn("Not support family.\n");
-        return "";
+        return "unknown";
     }
 
     return std::string(buf);
