@@ -14,28 +14,25 @@ static const struct argp_option options[] = {
 };
 
 static error_t parse_opt(int key, char* arg, struct argp_state* state) {
-    if (key == 'v') {
+    switch (key) {
+    case 'v':
         enable_debug = true;
         Log::log("Debug enabled.", "\n");
-        return 0;
-    }
-
-    if (key == 'c') {
+        break;
+    case 'c':
         config_path = arg;
-        return 0;
-    }
-
-    if (key == 'e') {
+        break;
+    case 'e':
         enable_bpf_debug = true;
-        Log::log("Ebpf debug enabled.", "\n");
-        return 0;
+    default:
+        return ARGP_ERR_UNKNOWN;
     }
 
-    return ARGP_ERR_UNKNOWN;
+    return 0;
 }
 
 static struct argp argp_parser = { options, parse_opt, 0, 0 };
 
 error_t parse_args(int argc, char* argv[]) {
-    return argp_parse(&argp_parser, argc, argv, 0, NULL, NULL);
+    return argp_parse(&argp_parser, argc, argv, 0, nullptr, nullptr);
 }
