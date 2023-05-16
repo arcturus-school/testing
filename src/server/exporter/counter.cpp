@@ -32,7 +32,7 @@ error_t Counter::init(bpf_object* obj) {
 
     Log::success("Obtain file descriptor of map ", name, ".\n");
 
-    pb = perf_buffer__new(fd, 16, handle, handle_lost, this);
+    pb = perf_buffer__new(fd, 16, handle, handle_lost, this, nullptr);
 
     if (!pb) {
         fprintf(stderr, "Failed to open perf buffer: %d\n", -errno);
