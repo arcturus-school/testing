@@ -22,3 +22,19 @@ TIME      PID    COMM         IP LADDR                LPORT  T> DADDR           
 00:08:53  0      swapper/7    4  172.18.246.19        41846  R>  20.189.173.3         443    ESTABLISHED
 00:08:54  0      swapper/6    4  172.18.246.19        41846  L>  20.189.173.3         443    LAST_ACK
 ```
+
+测试本程序可以使用 linux 自带的 `tc` , 也可以使用 `MNemu`
+
+```sh
+git clone https://github.com/Corefracture/mnemu.git
+```
+
+```sh
+cd mnemu; python ./mnemu_web.py
+```
+
+打开 mnenu 页面, 对 `Known IPs` 上的 IP 进行请求, 如
+
+```sh
+wget 192.168.1.0
+```
