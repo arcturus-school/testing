@@ -46,8 +46,12 @@ class Metric {
         for (size_t i = 1; i < this->labels.size(); i++) {
             s = this->labels[i - 1].offset + this->labels[i - 1].size;
 
+            // 这里存在一个 unsigned int 与 int 直接相减一定为正的问题...
+            // 所以隐式转换一下
+            int size = this->labels[i].size;
+
             // 考虑到数据对齐问题...
-            if (s % o == 0 || (o - s % o) - this->labels[i].size > 0) {
+            if (s % o == 0 || (o - s % o) - size > 0) {
                 this->labels[i].offset = s;
             } else {
                 this->labels[i].offset = s + (o - s % o);
