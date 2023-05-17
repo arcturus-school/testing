@@ -21,3 +21,7 @@
 6. 监控数据支持定制化落地到指定的数据库, 如 `Promethus` `Elasticsearch` 等
 
 7. 要求监控 `agent` 本身部署配置简单, 一个可执行文件和一个配置文件
+
+## Grafana 效果图
+
+![Grafana](./assets/grafana.png)
