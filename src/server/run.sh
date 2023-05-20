@@ -4,8 +4,6 @@ sudo apt-get update
 sudo apt install clang cmake llvm git libelf-dev libfl-dev make \
 	pkg-config curl libcurl4-openssl-dev gcc-multilib -y 
 
-# 不要安装 libbpf-dev, 会有 bug...（ ´д｀）ゞ
-
 git clone https://github.com/libbpf/libbpf.git
 
 cd libbpf/src

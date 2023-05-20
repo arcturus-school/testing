@@ -66,7 +66,7 @@ class Metric {
         }
 
         ts.push_back(std::thread(
-            [](bool exiting, Metric* ctx) {
+            [](bool* exiting, Metric* ctx) {
                 int err;
 
                 while (true) {
@@ -77,12 +77,12 @@ class Metric {
                         break;
                     }
 
-                    if (exiting) {
+                    if (*exiting) {
                         break;
                     }
                 }
             },
-            exiting, this));
+            &exiting, this));
     }
 
     virtual error_t init(bpf_object*) {
