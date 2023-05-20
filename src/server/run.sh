@@ -1,3 +1,5 @@
+#!/bin/bash
+
 sudo apt-get update
 
 # 安装 libbpf 环境
@@ -81,9 +83,9 @@ make bpf
 make
 
 # 执行 exporter
-sudo ./ecli -v -c config.yaml
+sudo ./ecli -v -c config.yaml &
 
 # 运行 prometheus
-./prometheus-2.44.0.linux-amd64/prometheus --config.file=prometheus.yml
+./prometheus-2.44.0.linux-amd64/prometheus --config.file=prometheus.yml &
 
 # 访问 localhost:9090
