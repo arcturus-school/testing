@@ -95,8 +95,10 @@ fi
 
 tar -zxvf prometheus-2.44.0.linux-amd64.tar.gz
 
+mv prometheus-2.44.0.linux-amd64 prometheus
+
 # 复制配置文件
-cp prometheus.yml prometheus-2.44.0.linux-amd64/prometheus.yml
+cp prometheus.yml prometheus/prometheus.yml
 
 # 编译 libbpf 程序
 make bpf
@@ -108,7 +110,9 @@ make
 sudo ./ecli -v -c config.yaml &
 
 # 运行 prometheus
-./prometheus-2.44.0.linux-amd64/prometheus --config.file=prometheus.yml &
+cd prometheus
+
+./prometheus --config.file=prometheus.yml &
 
 # 访问 localhost:9090
 echo "Server is running at localhost:9090"
