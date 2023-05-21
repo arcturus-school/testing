@@ -70,7 +70,10 @@ class Metric {
                 int err;
 
                 while (true) {
-                    err = perf_buffer__poll(ctx->pb, 0);
+                    // -1 represents waiting indefinitely util event arrives,
+                    // which cause ctrl + c not to exit immediately, so we set 1000ms
+                    // even though it still may not exit immediately.
+                    err = perf_buffer__poll(ctx->pb, 1000);
 
                     if (err < 0 && err != -EINTR) {
                         fprintf(stderr, "Error polling perf buffer: %s\n", strerror(-err));
