@@ -65,15 +65,20 @@ int main(int argc, char* argv[]) {
 
     std::ostringstream oss;
 
-    oss << "127.0.0.1:" << port;
+    // adapt docker
+    oss << "0.0.0.0:" << port;
 
-    // create an http server running on port 8080
+    // create an http server running on port
     prometheus::Exposer exposer{ oss.str() };
 
     // ask the exposer to scrape the registry on incoming HTTP requests
     exposer.RegisterCollectable(registry);
 
-    std::cout << "Server is running at " << BLUE("http://" + oss.str() + "/metrics\n");
+    std::ostringstream o;
+    
+    o << "127.0.0.1:" << port;
+    
+    std::cout << "Server is running at " << BLUE("http://" + o.str() + "/metrics\n");
 
     observe();
 
