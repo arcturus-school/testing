@@ -51,5 +51,8 @@ visit `localhost:3000` to see the panels.
 
 prometheus data source url is `http://prometheus:9090` .
 
+### Run with custom frontend
 
-
+```sh
+sudo docker-compose up -d
+```

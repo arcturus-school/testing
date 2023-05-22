@@ -1,0 +1,52 @@
+version: '3.9'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: unless-stopped
+    depends_on:
+      - exporter
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./data/prometheus:/prometheus/data
+    networks:
+      - monitoring
+  
+  exporter:
+    build:
+      context: server
+      dockerfile: Dockerfile
+    image: ecli
+    container_name: service
+    volumes:
+      - /sys/kernel/debug:/sys/kernel/debug:ro
+    command: -v -c config.yaml
+    privileged: true
+    ports:
+      - 8089:8089
+    networks:
+      - monitoring
+
+  nginx:
+    container_name: ecli_web
+    restart: on-failure
+    build:
+      context: web
+      dockerfile: Dockerfile
+    image: ecli_web
+    ports:
+      - 80:80
+    networks:
+      - monitoring
+    depends_on:
+      - exporter
+      - prometheus
+
+networks:
+  monitoring:
+    driver: bridge
+
+
