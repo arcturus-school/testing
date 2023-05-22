@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: unless-stopped
+    depends_on:
+      - exporter
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./data/prometheus:/prometheus/data
+    networks:
+      - monitoring
+  
+  exporter:
+    build:
+      context: server
+      dockerfile: Dockerfile
+    image: ecli
+    container_name: service
+    volumes:
+      - /sys/kernel/debug:/sys/kernel/debug:ro
+    command: -v -c config.yaml
+    privileged: true
+    ports:
+      - 8089:8089
+    networks:
+      - monitoring
+  
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: on-failure
+    depends_on:  
+      - prometheus
+    ports:
+      - 3000:3000
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+    driver: bridge
+
+
