@@ -30,13 +30,13 @@ cd server
 ```
 
 ```sh
-chmod +x ./run.sh; ./run.sh
+chmod +x ./run.sh && ./run.sh
 ```
 
 and then
 
 ```sh
-cd -; cd prometheus
+cd - && cd prometheus
 ```
 
 ```sh
