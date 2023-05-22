@@ -4,41 +4,48 @@
 git clone --recurse-submodules https://github.com/arcturus-school/testing.git
 ```
 
-### Prometheus
+## Run with Docker
+
+### Install Docker
 
 ```sh
-wget https://github.com/prometheus/prometheus/releases/download/v2.44.0/prometheus-2.44.0.linux-amd64.tar.gz
+curl -fsSL https://get.docker.com | bash -s docker
 ```
 
 ```sh
-tar -zxvf prometheus-2.44.0.linux-amd64.tar.gz
+sudo groupadd docker # create docker user group
 ```
 
 ```sh
-mv prometheus-2.44.0.linux-amd64 prometheus
+sudo usermod -aG docker $USER # add current user to docker user group
 ```
 
 ```sh
-# 复制配置文件
-cp prometheus.yml prometheus/prometheus.yml
+reboot
 ```
 
-## Run
+### Install Docker-compose
+
+see the latest version via this [address](https://github.com/docker/compose/releases).
 
 ```sh
-cd server
-```
-
-```sh
-chmod +x ./run.sh && ./run.sh
-```
-
-and then
-
-```sh
-cd - && cd prometheus
+curl -L https://github.com/docker/compose/releases/download/v2.14.0/docker-compose-linux-`uname -m` \
+    > ./docker-compose
 ```
 
 ```sh
-./prometheus --config.file=prometheus.yml
+chmod +x ./docker-compose
 ```
+
+```sh
+sudo mv ./docker-compose /usr/local/bin/docker-compose
+```
+
+### Run with Grafana
+
+```sh
+sudo docker-compose -f docker-compose-grafana.yml up -d
+```
+
+
+
