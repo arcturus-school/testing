@@ -49,4 +49,4 @@ make bpf
 make
 
 # run exporter
-sudo ./ecli -v -c config.yaml &
+sudo ./ecli -v -c config.yaml
