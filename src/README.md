@@ -47,5 +47,9 @@ sudo mv ./docker-compose /usr/local/bin/docker-compose
 sudo docker-compose -f docker-compose-grafana.yml up -d
 ```
 
+visit `localhost:3000` to see the panels.
+
+prometheus data source url is `http://prometheus:9090` .
+
 
 
