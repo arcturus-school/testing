@@ -1,0 +1,12 @@
+[submodule "src/server/dependencies/libbpf"]
+	path = src/server/dependencies/libbpf
+	url = https://github.com/libbpf/libbpf.git
+[submodule "src/server/dependencies/bpftool"]
+	path = src/server/dependencies/bpftool
+	url = https://github.com/libbpf/bpftool.git
+[submodule "src/server/dependencies/yaml-cpp"]
+	path = src/server/dependencies/yaml-cpp
+	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "src/server/dependencies/prometheus-cpp"]
+	path = src/server/dependencies/prometheus-cpp
+	url = https://github.com/jupp0r/prometheus-cpp.git
