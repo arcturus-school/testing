@@ -17,6 +17,7 @@ export default defineConfig({
       '@src': resolve(__dirname, 'src'),
       '@mock': resolve(__dirname, 'src/mock'),
       '@components': resolve(__dirname, 'src/components'),
+      '@utils': resolve(__dirname, 'src/utils'),
     },
   },
   server: {
