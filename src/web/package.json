@@ -19,6 +19,7 @@
     "@types/mockjs": "^1.0.7",
     "@types/node": "^20.2.3",
     "@vitejs/plugin-vue": "^4.1.0",
+    "sass": "^1.62.1",
     "typescript": "^5.0.4",
     "unplugin-vue-components": "^0.24.1",
     "vite": "^4.3.2",
