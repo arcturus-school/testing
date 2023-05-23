@@ -15,7 +15,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@src': resolve(__dirname, 'src'),
-      '@mock': resolve(__dirname, 'mock'),
+      '@mock': resolve(__dirname, 'src/mock'),
     },
   },
   server: {
