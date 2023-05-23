@@ -14,7 +14,7 @@
 
 ### 前端要求
 
-使用 vue 框架和 element-ui 组件( 参考 vue-element-admin )
+使用 vue 框架和 <del>element-ui 组件( 参考 vue-element-admin )</del> 咱用 antd 吧  (╯▽╰ )
 
 ### 数据来源
 
