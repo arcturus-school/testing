@@ -22,7 +22,8 @@
     "baseUrl": ".",
     "paths": {
       "@src/*": ["src/*"],
-      "@mock/*": ["src/mock/*"]
+      "@mock/*": ["src/mock/*"],
+      "@components/*": ["src/components/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
