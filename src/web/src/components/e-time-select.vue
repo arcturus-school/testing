@@ -113,7 +113,12 @@ const opts = computed(() => {
 const clickItem = function (item: Option) {
   log(`time range select: ${item.value}`);
 
-  store.dt = item.value;
+  store.$patch({
+    dt: item.value,
+    start: null,
+    end: null,
+  });
+
   timeRange.value = item.label;
   visible.value = false; /* close the modal */
 };
@@ -124,8 +129,16 @@ const confirm = function () {
   if (typeof date.value !== 'undefined') {
     log(`time range input:`, date.value);
 
-    store.start = date.value[0].valueOf() / 1000;
-    store.end = date.value[1].valueOf() / 1000;
+    store.$patch({
+      start: date.value[0].valueOf() / 1000,
+      end: date.value[1].valueOf() / 1000,
+      dt: 0,
+    });
+
+    const d1 = date.value[0].format('YYYY-MM-DD HH:mm:ss');
+    const d2 = date.value[1].format('YYYY-MM-DD HH:mm:ss');
+    timeRange.value = `${d1}-${d2}`;
+    date.value = undefined;
   }
 };
 </script>
