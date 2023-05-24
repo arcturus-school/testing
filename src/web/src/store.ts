@@ -83,7 +83,12 @@ export const useStore = defineStore('data', {
 
         for (let i = 0; i < res.data.length; i++) {
           if (!filter.includes(res.data[i])) {
-            newLabels.push({ value: res.data[i] });
+            if (
+              !res.data[i].endsWith('sum') &&
+              !res.data[i].endsWith('count')
+            ) {
+              newLabels.push({ value: res.data[i] });
+            }
           }
         }
 
@@ -94,25 +99,38 @@ export const useStore = defineStore('data', {
     getMetricData() {
       this.loading = true;
 
-      if (this.start === null && this.end === null) {
+      if (this.start !== null && this.end !== null) {
+        // 有时间范围时
         this.end = new Date().getTime() / 1000;
         this.start = this.end - this.dt;
-      }
 
-      this.getData().then(() => {
-        this.loading = false;
-      });
+        this.getData(this.start, this.end).then(() => {
+          this.loading = false;
+        });
+      } else {
+        // 有 dt 时
+        const end = new Date().getTime() / 1000;
+        const start = end - this.dt;
+
+        this.getData(start, end).then(() => {
+          this.loading = false;
+        });
+      }
     },
 
-    getData() {
+    getData(start: number, end: number) {
       log(`start to get data of ${this.label}...`);
+
+      const dt = end - start;
 
       return req
         .get(`/query_range`, {
           params: {
-            start: this.start,
-            end: this.end,
+            start: start,
+            end: end,
             query: this.label,
+            // 按照 1800 秒内 257 个数据点获取数据
+            step: Math.round(dt / 1800) * 7,
           },
         })
         .then((res) => {
@@ -127,10 +145,10 @@ export const useStore = defineStore('data', {
         if (this.dt !== 0) {
           log(`refresh data of ${this.label}...`);
 
-          this.end = new Date().getTime() / 1000;
-          this.start = this.end - this.dt;
+          const end = new Date().getTime() / 1000;
+          const start = end - this.dt;
 
-          this.getData();
+          this.getData(start, end);
         }
       } else {
         warn('unable to refresh due to no metrics selected....');
