@@ -77,7 +77,7 @@ Mock.mock(/\/api\/v1\/query_range.*counter/, {
           job: 'ecli',
           protocol: 'IPv4',
           saddr: '@ip',
-          sport: Math.round(Math.random() * 65535).toString(),
+          sport: () => Math.round(Math.random() * 65535).toString(),
         },
         values: function () {
           const res: [number, string][] = [];
