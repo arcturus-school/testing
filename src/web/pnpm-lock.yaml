@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@ant-design/icons-vue': ^6.1.0
+  '@antv/g-svg': ^1.8.58
   '@antv/g2': ^5.0.8
   '@types/mockjs': ^1.0.7
   '@types/node': ^20.2.3
@@ -20,6 +21,7 @@ specifiers:
 
 dependencies:
   '@ant-design/icons-vue': 6.1.0_vue@3.3.4
+  '@antv/g-svg': 1.8.58_@antv+g-lite@1.0.63
   '@antv/g2': 5.0.8_@antv+g-lite@1.0.63
   ant-design-vue: 3.2.20_vue@3.3.4
   axios: 1.4.0
@@ -226,6 +228,41 @@ packages:
       '@antv/g-lite': ^1.0.0
     dependencies:
       '@antv/g-lite': 1.0.63
+      '@antv/util': 3.3.2
+      tslib: 2.5.2
+    dev: false
+
+  /@antv/g-plugin-svg-picker/1.7.51_msnsgdzhqham2fj7g7kenv7pg4:
+    resolution: {integrity: sha512-3Kgyd/6yhzjJWuKHmaYHinmAyYd2rcBe7+mkvOxpZqlR/Mvj1lb/qD/81HvxYiaPQrZpzZNPHC0htNhoc+cAjg==}
+    peerDependencies:
+      '@antv/g-lite': ^1.0.0
+      '@antv/g-plugin-svg-renderer': ^1.0.1
+    dependencies:
+      '@antv/g-lite': 1.0.63
+      '@antv/g-plugin-svg-renderer': 1.8.58_@antv+g-lite@1.0.63
+      tslib: 2.5.2
+    dev: false
+
+  /@antv/g-plugin-svg-renderer/1.8.58_@antv+g-lite@1.0.63:
+    resolution: {integrity: sha512-RGNxhTMaMAvD2RWa5QJnVAo+gOxavlXxFr/dqlrHzuySKrtb4ksW5+f1hQmAEHuwruCWl0cO94FU1xlnI+va1A==}
+    peerDependencies:
+      '@antv/g-lite': ^1.0.0
+    dependencies:
+      '@antv/g-lite': 1.0.63
+      '@antv/util': 3.3.2
+      gl-matrix: 3.4.3
+      tslib: 2.5.2
+    dev: false
+
+  /@antv/g-svg/1.8.58_@antv+g-lite@1.0.63:
+    resolution: {integrity: sha512-lWW9IiNnyfN6qlUJ4fBi97gMHpP9GUehpi1vKRHMac5w9kCo3CkKNMYFNZlGrqafyiGB39rQZ0nWU3Bk3cj+hw==}
+    peerDependencies:
+      '@antv/g-lite': ^1.0.0
+    dependencies:
+      '@antv/g-lite': 1.0.63
+      '@antv/g-plugin-dom-interaction': 1.7.50_@antv+g-lite@1.0.63
+      '@antv/g-plugin-svg-picker': 1.7.51_msnsgdzhqham2fj7g7kenv7pg4
+      '@antv/g-plugin-svg-renderer': 1.8.58_@antv+g-lite@1.0.63
       '@antv/util': 3.3.2
       tslib: 2.5.2
     dev: false
