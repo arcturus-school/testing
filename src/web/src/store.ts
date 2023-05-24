@@ -14,6 +14,8 @@ req.interceptors.response.use(
       response: { status, statusText },
     } = err;
 
+    log(err);
+
     message.error(`${status} ${statusText}`);
 
     return Promise.reject(err);
@@ -92,6 +94,11 @@ export const useStore = defineStore('data', {
     getMetricData() {
       this.loading = true;
 
+      if (this.start === null && this.end === null) {
+        this.end = new Date().getTime() / 1000;
+        this.start = this.end - this.dt;
+      }
+
       this.getData().then(() => {
         this.loading = false;
       });
@@ -109,19 +116,22 @@ export const useStore = defineStore('data', {
           },
         })
         .then((res) => {
-          log(`get data of ${this.label}`, res);
+          log(`data of ${this.label}`);
+          log(res);
         })
         .catch(() => {});
     },
 
     refreshData() {
       if (this.label !== null) {
-        log(`refresh data of ${this.label}...`);
+        if (this.dt !== 0) {
+          log(`refresh data of ${this.label}...`);
 
-        this.end = new Date().getTime() / 1000;
-        this.start = this.end - this.dt;
+          this.end = new Date().getTime() / 1000;
+          this.start = this.end - this.dt;
 
-        this.getData();
+          this.getData();
+        }
       } else {
         warn('unable to refresh due to no metrics selected....');
 
