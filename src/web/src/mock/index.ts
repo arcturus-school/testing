@@ -63,4 +63,35 @@ Mock.mock(/\/api\/v1\/query_range.*bucket.*/, {
   },
 });
 
+Mock.mock(/\/api\/v1\/query_range.*counter/, {
+  status: 'success',
+  data: {
+    resultType: 'matrix',
+    'result|80': [
+      {
+        metric: {
+          __name__: 'tcp_retrans_counter',
+          daddr: '@ip',
+          dport: () => Math.round(Math.random() * 65535).toString(),
+          instance: 'exporter:8089',
+          job: 'ecli',
+          protocol: 'IPv4',
+          saddr: '@ip',
+          sport: Math.round(Math.random() * 65535).toString(),
+        },
+        values: function () {
+          const res: [number, string][] = [];
+          const now = new Date().getTime() / 1000;
+
+          for (let i = 256; i >= 0; i--) {
+            res.push([now - 7 * i, '1']);
+          }
+
+          return res;
+        },
+      },
+    ],
+  },
+});
+
 log('mock loading complete...');
