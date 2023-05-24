@@ -3,3 +3,49 @@
   align-items: center;
   justify-content: center;
 }
+
+.width-100 {
+  width: 100%;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+// 轨道
+::-webkit-scrollbar-track {
+  border-radius: 3px;
+  background: #fafafa;
+}
+
+// 滑块
+$thumb-bg: #d9d9d9;
+
+::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: $thumb-bg;
+}
+
+.rc-virtual-list-scrollbar-thumb {
+  background: $thumb-bg !important;
+  width: 6px !important;
+}
+
+.time-select-modal.ant-modal {
+  width: 380px !important;
+
+  $radius: 6px;
+
+  .ant-modal-content {
+    border-radius: $radius;
+
+    .ant-modal-header {
+      border-radius: $radius $radius 0 0;
+    }
+  }
+}
