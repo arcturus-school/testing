@@ -54,7 +54,7 @@ store.getLabels();
   .ant-layout-content {
     flex: 1;
     display: flex;
-    padding: 10px 50px;
+    padding: 0px 50px;
     background-color: #fff;
   }
 }
