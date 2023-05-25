@@ -22,7 +22,7 @@ const store = useStore();
 const router = useRouter();
 const route = useRoute();
 
-const { labels, label } = storeToRefs(store);
+const { labels, label, chartType } = storeToRefs(store);
 
 watchEffect(() => {
   label.value = (route.params.metrics as string) ?? '';
@@ -30,6 +30,12 @@ watchEffect(() => {
 
 const changeHandler = function (value: string) {
   log(`select label: ${value}...`);
+
+  if (value.endsWith('bucket')) {
+    chartType.value = 'heatmap';
+  } else if (value.endsWith('counter')) {
+    chartType.value = 'lines';
+  }
 
   router.push(value);
 };
