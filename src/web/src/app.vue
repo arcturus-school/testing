@@ -4,7 +4,6 @@
       <a-layout-header>
         <a-space :size="20">
           <e-metrics />
-          <e-chart-select />
         </a-space>
         <a-space :size="5">
           <e-time-select />
@@ -16,7 +15,7 @@
         </a-space>
       </a-layout-header>
       <a-layout-content>
-        <e-chart />
+        <router-view />
       </a-layout-content>
     </a-layout>
   </a-config-provider>
@@ -24,8 +23,6 @@
 
 <script setup lang="ts">
 import EMetrics from '@components/e-metrics.vue';
-import EChartSelect from '@components/e-chart-select.vue';
-import EChart from '@components/e-chart.vue';
 import ETimeSelect from '@components/e-time-select.vue';
 import locale from 'ant-design-vue/es/locale/zh_CN';
 import { SyncOutlined } from '@ant-design/icons-vue';
