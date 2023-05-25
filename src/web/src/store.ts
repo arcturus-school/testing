@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { log } from '@utils/log';
 import { message } from 'ant-design-vue';
+import { updateCounterData } from '@utils/draw';
 import axios from 'axios';
 
 const req = axios.create({
@@ -30,7 +31,7 @@ interface State {
   metricsData: Result | null;
   start: number | null;
   end: number | null;
-  chartType: string;
+  chartType: 'bucket' | 'counter' | '';
 }
 
 // 这些是 prometheus 自带的指标
@@ -99,9 +100,20 @@ export const useStore = defineStore('data', {
       }
     },
 
+    updateChartData() {
+      log('Update chart data...');
+
+      if (this.chartType === 'bucket') {
+      } else if (this.chartType === 'counter') {
+        updateCounterData(this.metricsData!);
+      }
+    },
+
     getDateByRange() {
       if (this.label !== '') {
-        return this.getData(this.label, this.start!, this.end!);
+        return this.getData(this.label, this.start!, this.end!).then(() => {
+          this.updateChartData();
+        });
       }
     },
 
@@ -110,7 +122,9 @@ export const useStore = defineStore('data', {
         const end = new Date().getTime() / 1000;
         const start = end - this.dt;
 
-        return this.getData(this.label, start, end);
+        return this.getData(this.label, start, end).then(() => {
+          this.updateChartData();
+        });
       }
     },
 
@@ -150,7 +164,9 @@ export const useStore = defineStore('data', {
         const end = new Date().getTime() / 1000;
         const start = end - this.dt;
 
-        this.getData(this.label, start, end);
+        this.getData(this.label, start, end).then(() => {
+          this.updateChartData();
+        });
       }
     },
   },
