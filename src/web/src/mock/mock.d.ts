@@ -3,7 +3,7 @@ type t = 'matrix';
 interface Result {
   resultType: t;
   result: {
-    metric: {
+    metrics: {
       __name__: string;
       instance: string;
       job: string;
