@@ -22,14 +22,12 @@ req.interceptors.response.use(
   }
 );
 
-interface MetricsData {}
-
 interface State {
   labels: { value: string }[];
-  label: string | null;
+  label: string;
   loading: boolean;
   dt: number;
-  metricsData: MetricsData;
+  metricsData: Result | null;
   start: number | null;
   end: number | null;
   chartType: string;
@@ -49,28 +47,17 @@ const filter = [
   'up',
 ];
 
-export const options = [
-  {
-    value: 'lines',
-    label: '折线图',
-  },
-  {
-    value: 'heatmap',
-    label: '热图',
-  },
-];
-
 export const useStore = defineStore('data', {
   state: (): State => {
     return {
       labels: [],
-      label: null,
+      label: '',
       loading: false,
       dt: 900, // 15 minutes
-      metricsData: {},
+      metricsData: null,
       start: null,
       end: null,
-      chartType: options[0].value,
+      chartType: '',
     };
   },
 
@@ -82,12 +69,11 @@ export const useStore = defineStore('data', {
         const newLabels: { value: string }[] = [];
 
         for (let i = 0; i < res.data.length; i++) {
-          if (!filter.includes(res.data[i])) {
-            if (
-              !res.data[i].endsWith('sum') &&
-              !res.data[i].endsWith('count')
-            ) {
-              newLabels.push({ value: res.data[i] });
+          const label = res.data[i];
+
+          if (!filter.includes(label)) {
+            if (!label.endsWith('sum') && !label.endsWith('count')) {
+              newLabels.push({ value: label });
             }
           }
         }
@@ -96,29 +82,24 @@ export const useStore = defineStore('data', {
       });
     },
 
-    getMetricData() {
+    getMetricData(label: string) {
       this.loading = true;
 
       if (this.start !== null && this.end !== null) {
-        // 有时间范围时
-        this.end = new Date().getTime() / 1000;
-        this.start = this.end - this.dt;
-
-        this.getData(this.start, this.end).then(() => {
+        return this.getData(label, this.start, this.end).then(() => {
           this.loading = false;
         });
       } else {
-        // 有 dt 时
         const end = new Date().getTime() / 1000;
         const start = end - this.dt;
 
-        this.getData(start, end).then(() => {
+        return this.getData(label, start, end).then(() => {
           this.loading = false;
         });
       }
     },
 
-    getData(start: number, end: number) {
+    getData(label: string, start: number, end: number) {
       log(`start to get data of ${this.label}...`);
 
       const dt = end - start;
@@ -128,27 +109,29 @@ export const useStore = defineStore('data', {
           params: {
             start: start,
             end: end,
-            query: this.label,
+            query: label,
             // 按照 1800 秒内 257 个数据点获取数据
             step: Math.round(dt / 1800) * 7,
           },
         })
         .then((res) => {
-          log(`data of ${this.label}`);
+          log(`data of ${label}`);
           log(res);
+
+          this.metricsData = res.data;
         })
         .catch(() => {});
     },
 
     refreshData() {
-      if (this.label !== null) {
+      if (this.label !== '') {
         if (this.dt !== 0) {
           log(`refresh data of ${this.label}...`);
 
           const end = new Date().getTime() / 1000;
           const start = end - this.dt;
 
-          this.getData(start, end);
+          this.getData(this.label, start, end);
         }
       } else {
         warn('unable to refresh due to no metrics selected....');
