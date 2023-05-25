@@ -1,13 +1,6 @@
 <template>
   <div class="chart-wrapper center">
-    <a-empty
-      v-if="!label"
-      :image="Empty.PRESENTED_IMAGE_SIMPLE"
-      description="暂无数据"
-    />
-
-    <a-spin v-else-if="loading" />
-
+    <a-spin v-if="loading" />
     <div v-else id="chart"></div>
   </div>
 </template>
@@ -15,47 +8,35 @@
 <script lang="ts" setup>
 import { useStore } from '@src/store';
 import { storeToRefs } from 'pinia';
-import { Empty } from 'ant-design-vue';
-import { Chart } from '@antv/g2';
-import { watchEffect, nextTick } from 'vue';
-import {
-  setChart,
-  drawHeatMap,
-  drawLines,
-  destroy,
-  svgRenderer,
-} from '@utils/draw';
+import { useRoute } from 'vue-router';
+import { nextTick, watch } from 'vue';
+import { drawHeatMap, drawLines } from '@utils/draw';
 
 const store = useStore();
 
-const { label, loading, metricsData, chartType } = storeToRefs(store);
+const route = useRoute();
 
-watchEffect(() => {
-  if (loading.value) {
-    destroy();
-  } else {
-    if (label.value != null) {
+const { loading, metricsData, chartType } = storeToRefs(store);
+
+watch(
+  () => route.params.metrics,
+  (n) => {
+    store.getMetricData(n as string).then(() => {
       nextTick(() => {
-        destroy(); // 绘图前先销毁之前的图
-
-        setChart(
-          new Chart({
-            container: 'chart',
-            theme: 'classic',
-            autoFit: true,
-            renderer: svgRenderer,
-          })
-        );
-
-        if (chartType.value === 'heapmap') {
-          drawHeatMap(metricsData.value!);
-        } else if (chartType.value == 'lines') {
-          drawLines();
+        if (metricsData.value?.result.length !== 0) {
+          if (chartType.value === 'heatmap') {
+            drawHeatMap('chart', metricsData.value!);
+          } else if (chartType.value == 'lines') {
+            drawLines();
+          }
         }
       });
-    }
+    });
+  },
+  {
+    immediate: true,
   }
-});
+);
 </script>
 
 <style scoped lang="scss">
