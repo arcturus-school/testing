@@ -29,5 +29,7 @@ declare module '@vue/runtime-core' {
     EChartSelect: typeof import('./src/components/e-chart-select.vue')['default']
     EMetrics: typeof import('./src/components/e-metrics.vue')['default']
     ETimeSelect: typeof import('./src/components/e-time-select.vue')['default']
+    RouterLink: typeof import('vue-router')['RouterLink']
+    RouterView: typeof import('vue-router')['RouterView']
   }
 }

@@ -1,6 +1,7 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import { log } from '@utils/log';
+import { router } from '@src/router';
 import app from '@src/app.vue';
 
 import 'ant-design-vue/es/message/style/css';
@@ -11,4 +12,4 @@ if (import.meta.env.DEV) {
   await import('@mock/index');
 }
 
-createApp(app).use(createPinia()).mount('#app');
+createApp(app).use(createPinia()).use(router).mount('#app');
