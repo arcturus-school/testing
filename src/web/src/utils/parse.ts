@@ -13,7 +13,7 @@ export function parseCounterData(data: Result): Data[] {
 
     return e.values.map((v) => {
       return {
-        metrics: m,
+        metric: m,
         date: v[0] * 1000,
         count: Number(v[1]),
       };
