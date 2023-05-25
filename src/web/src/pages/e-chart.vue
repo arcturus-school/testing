@@ -10,7 +10,7 @@ import { useStore } from '@src/store';
 import { storeToRefs } from 'pinia';
 import { useRoute } from 'vue-router';
 import { nextTick, watch } from 'vue';
-import { drawHeatMap, drawLines } from '@utils/draw';
+import { drawHeatMap, drawCounter } from '@utils/draw';
 
 const store = useStore();
 
@@ -24,10 +24,10 @@ watch(
     store.getMetricData(n as string).then(() => {
       nextTick(() => {
         if (metricsData.value?.result.length !== 0) {
-          if (chartType.value === 'heatmap') {
+          if (chartType.value === 'bucket') {
             drawHeatMap('chart', metricsData.value!);
-          } else if (chartType.value == 'lines') {
-            drawLines();
+          } else if (chartType.value == 'counter') {
+            drawCounter('chart', metricsData.value!);
           }
         }
       });
