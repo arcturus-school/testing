@@ -140,7 +140,7 @@ export const useStore = defineStore('data', {
             end: end,
             query: label,
             // 按照 1800 秒内 257 个数据点获取数据
-            step: Math.round(dt / 1800) * 7,
+            step: Math.round(dt / 1800) * 7 ?? 1,
           },
         })
         .then((res) => {
