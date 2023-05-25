@@ -89,6 +89,7 @@ export function drawCounter(id: string, metricsData: Result) {
     .encode('y', 'count')
     .encode('color', (d: Data) => objToString(d.metrics))
     .axis('y', { title: false })
+    .scale('y', { domainMin: 0 })
     .axis('x', {
       title: '时间',
       titlePosition: 'bottom',
