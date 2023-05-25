@@ -26,9 +26,9 @@ const { labels, label, chartType } = storeToRefs(store);
 
 function changeChartType(value: string) {
   if (value.endsWith('bucket')) {
-    chartType.value = 'heatmap';
+    chartType.value = 'bucket';
   } else if (value.endsWith('counter')) {
-    chartType.value = 'lines';
+    chartType.value = 'counter';
   }
 }
 
