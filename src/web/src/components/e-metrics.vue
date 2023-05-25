@@ -24,18 +24,23 @@ const route = useRoute();
 
 const { labels, label, chartType } = storeToRefs(store);
 
-watchEffect(() => {
-  label.value = (route.params.metrics as string) ?? '';
-});
-
-const changeHandler = function (value: string) {
-  log(`select label: ${value}...`);
-
+function changeChartType(value: string) {
   if (value.endsWith('bucket')) {
     chartType.value = 'heatmap';
   } else if (value.endsWith('counter')) {
     chartType.value = 'lines';
   }
+}
+
+watchEffect(() => {
+  label.value = (route.params.metrics as string) ?? '';
+  changeChartType(label.value);
+});
+
+const changeHandler = function (value: string) {
+  log(`select label: ${value}...`);
+
+  changeChartType(value);
 
   router.push(value);
 };
