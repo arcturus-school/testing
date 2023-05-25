@@ -14,15 +14,24 @@
 import { useStore } from '@src/store';
 import { log } from '@utils/log';
 import { storeToRefs } from 'pinia';
+import { useRouter, useRoute } from 'vue-router';
+import { watchEffect } from 'vue';
 
 const store = useStore();
 
+const router = useRouter();
+const route = useRoute();
+
 const { labels, label } = storeToRefs(store);
+
+watchEffect(() => {
+  label.value = (route.params.metrics as string) ?? '';
+});
 
 const changeHandler = function (value: string) {
   log(`select label: ${value}...`);
 
-  store.getMetricData();
+  router.push(value);
 };
 </script>
 
