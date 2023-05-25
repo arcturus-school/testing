@@ -1,6 +1,10 @@
 import Mock from 'mockjs';
 import { log } from '@utils/log';
 
+// mock data
+import COUNTER from '@mock/retrans.json';
+import BUCKET from '@mock/bucket.json';
+
 Mock.setup({ timeout: '1000' });
 
 Mock.mock(/\/api\/v1\/label\/__name__\/values/, {
@@ -29,69 +33,8 @@ Mock.mock(/\/api\/v1\/label\/__name__\/values/, {
   ],
 });
 
-Mock.mock(/\/api\/v1\/query_range.*bucket.*/, {
-  status: 'success',
-  data: {
-    resultType: 'matrix',
-    'result|28': [
-      {
-        metric: {
-          __name__: 'bio_latency_histogram_bucket',
-          dev: '1795',
-          instance: 'exporter:8089',
-          job: 'ecli',
-          'le|+1': [
-            ...new Array(27)
-              .fill(null)
-              .map((_, idx) => Math.pow(2, idx).toString()),
-            '+Inf',
-          ],
-          op: 'read',
-        },
-        values: function () {
-          const res: [number, string][] = [];
-          const now = new Date().getTime() / 1000;
+Mock.mock(/\/api\/v1\/query_range.*bucket.*/, BUCKET);
 
-          for (let i = 256; i >= 0; i--) {
-            res.push([now - 7 * i, Math.round(Math.random() * 2).toString()]);
-          }
-
-          return res;
-        },
-      },
-    ],
-  },
-});
-
-Mock.mock(/\/api\/v1\/query_range.*counter/, {
-  status: 'success',
-  data: {
-    resultType: 'matrix',
-    'result|80': [
-      {
-        metric: {
-          __name__: 'tcp_retrans_counter',
-          daddr: '@ip',
-          dport: () => Math.round(Math.random() * 65535).toString(),
-          instance: 'exporter:8089',
-          job: 'ecli',
-          protocol: 'IPv4',
-          saddr: '@ip',
-          sport: () => Math.round(Math.random() * 65535).toString(),
-        },
-        values: function () {
-          const res: [number, string][] = [];
-          const now = new Date().getTime() / 1000;
-
-          for (let i = 256; i >= 0; i--) {
-            res.push([now - 7 * i, '1']);
-          }
-
-          return res;
-        },
-      },
-    ],
-  },
-});
+Mock.mock(/\/api\/v1\/query_range.*counter/, COUNTER);
 
 log('mock loading complete...');
