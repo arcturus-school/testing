@@ -121,6 +121,8 @@ const clickItem = function (item: Option) {
 
   timeRange.value = item.label;
   visible.value = false; /* close the modal */
+
+  store.getDataByDt();
 };
 
 const confirm = function () {
@@ -139,6 +141,8 @@ const confirm = function () {
     const d2 = date.value[1].format('YYYY-MM-DD HH:mm:ss');
     timeRange.value = `${d1}-${d2}`;
     date.value = undefined;
+
+    store.getDateByRange();
   }
 };
 </script>

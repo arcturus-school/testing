@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { log, warn } from '@utils/log';
+import { log } from '@utils/log';
 import { message } from 'ant-design-vue';
 import axios from 'axios';
 
@@ -99,8 +99,23 @@ export const useStore = defineStore('data', {
       }
     },
 
+    getDateByRange() {
+      if (this.label !== '') {
+        return this.getData(this.label, this.start!, this.end!);
+      }
+    },
+
+    getDataByDt() {
+      if (this.label !== '') {
+        const end = new Date().getTime() / 1000;
+        const start = end - this.dt;
+
+        return this.getData(this.label, start, end);
+      }
+    },
+
     getData(label: string, start: number, end: number) {
-      log(`start to get data of ${this.label}...`);
+      log(`Start to get data of ${this.label}...`);
 
       const dt = end - start;
 
@@ -115,7 +130,7 @@ export const useStore = defineStore('data', {
           },
         })
         .then((res) => {
-          log(`data of ${label}`);
+          log(`Obtain data of ${label}:`);
           log(res);
 
           this.metricsData = res.data;
@@ -124,19 +139,18 @@ export const useStore = defineStore('data', {
     },
 
     refreshData() {
-      if (this.label !== '') {
-        if (this.dt !== 0) {
-          log(`refresh data of ${this.label}...`);
-
-          const end = new Date().getTime() / 1000;
-          const start = end - this.dt;
-
-          this.getData(this.label, start, end);
-        }
-      } else {
-        warn('unable to refresh due to no metrics selected....');
-
+      if (this.label === '') {
         message.warn('请先选择指标后再刷新');
+        return;
+      }
+
+      if (this.dt !== 0) {
+        log(`Refresh data of [${this.label}]`);
+
+        const end = new Date().getTime() / 1000;
+        const start = end - this.dt;
+
+        this.getData(this.label, start, end);
       }
     },
   },
