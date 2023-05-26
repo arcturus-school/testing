@@ -10,7 +10,13 @@ import { useStore } from '@src/store';
 import { storeToRefs } from 'pinia';
 import { useRoute } from 'vue-router';
 import { watch, ref, onMounted, onUnmounted } from 'vue';
-import { drawHeatMap, drawCounter, initChart, destroy } from '@utils/draw';
+import {
+  drawHeatMap,
+  drawCounter,
+  initChart,
+  destroy,
+  clear,
+} from '@utils/draw';
 
 const store = useStore();
 
@@ -31,6 +37,9 @@ onUnmounted(() => {
 watch(
   () => route.params.metrics,
   (n) => {
+    // 清空画布
+    clear();
+
     store.getMetricData(n as string).then(() => {
       if (metricsData.value?.result.length !== 0) {
         switch (chartType.value) {
