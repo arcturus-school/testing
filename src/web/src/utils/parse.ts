@@ -1,7 +1,3 @@
-export interface Data {
-  [key: string]: string | number;
-}
-
 export function parseCounterData(data: Result) {
   let idx = 0,
     len = 0;
@@ -37,8 +33,4 @@ export function parseCounterData(data: Result) {
   });
 
   return [x, series];
-}
-
-export function objToString(m: any) {
-  return JSON.stringify(m);
 }
