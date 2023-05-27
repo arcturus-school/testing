@@ -1,6 +1,6 @@
 import { EChartsOption, ECharts, init } from 'echarts';
 import { debounce } from '@utils/tools';
-import { parseCounterData } from '@utils/parse';
+import { parseBucketData, parseCounterData } from '@utils/parse';
 import dayjs from 'dayjs';
 
 let chart: ECharts | null = null;
@@ -14,13 +14,132 @@ const resize = debounce(() => {
   });
 }, 200);
 
+const xAxisOptions: any = {
+  type: 'category',
+  name: '时间',
+  nameLocation: 'middle',
+  boundaryGap: true,
+  nameTextStyle: {
+    padding: [20, 0, 0, 0],
+    color: '#262626',
+    fontFamily: '',
+  },
+  axisLine: {
+    show: true,
+    lineStyle: {
+      color: '#f0f0f0',
+    },
+  },
+  axisLabel: {
+    show: true,
+    color: '#262626',
+    fontFamily: '',
+    showMinLabel: false,
+    formatter: (v: string) => dayjs(Number(v)).format('YYYY-MM-DD HH:mm'),
+  },
+  splitLine: {
+    show: true,
+    lineStyle: {
+      color: '#f0f0f0',
+    },
+  },
+};
+
+const yAxisOptions: any = {
+  show: true,
+  type: 'value',
+  axisLine: {
+    show: true,
+    lineStyle: {
+      color: '#f0f0f0',
+    },
+  },
+  splitLine: {
+    show: true,
+    lineStyle: {
+      color: '#f0f0f0',
+    },
+  },
+  axisLabel: {
+    show: true,
+    color: '#262626',
+    fontFamily: '',
+  },
+};
+
 export function initChart(ctx: HTMLDivElement) {
   chart = init(ctx, undefined, { renderer: 'svg' });
 
   window.addEventListener('resize', resize);
 }
 
-export function drawHeatMap(data: Result) {}
+export function drawHeatMap(data: Result) {
+  const [x, y, max, res] = parseBucketData(data);
+
+  const option: EChartsOption = {
+    tooltip: {
+      position: 'top',
+      formatter: (p: any) => {
+        let res = `<div style="background: ${p.color}; width: 12px; height: 12px; border-radius: 6px; display: inline-block; margin-right: 6px"></div>`;
+
+        const d = `<span style="font-weight: bold;"><% date %></span><br/>`;
+
+        res += d.replace(
+          '<% date %>',
+          dayjs(Number(p.name)).format('YYYY-MM-DD HH:mm:ss')
+        );
+
+        res += `count: ${p.data[2]}<br/>bucket: ${p.data[1]}`;
+
+        return res;
+      },
+    },
+    grid: {
+      left: 0,
+      right: 0,
+      top: 40,
+      bottom: 30,
+      containLabel: true,
+    },
+    xAxis: {
+      ...xAxisOptions,
+      data: x,
+    },
+    yAxis: {
+      ...yAxisOptions,
+      type: 'category',
+      data: y,
+      splitArea: {
+        show: true,
+      },
+    },
+    visualMap: {
+      min: 0,
+      max: max,
+      type: 'continuous',
+      show: true,
+      hoverLink: false,
+      orient: 'horizontal',
+      right: 0,
+      top: 0,
+      text: [String(max), '0'],
+    },
+    series: [
+      {
+        type: 'heatmap',
+        data: res,
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+          },
+        },
+      },
+    ],
+  };
+
+  chart!.setOption(option);
+}
 
 export function drawCounter(data: Result) {
   const [x, series] = parseCounterData(data);
@@ -64,57 +183,10 @@ export function drawCounter(data: Result) {
       containLabel: true,
     },
     xAxis: {
-      type: 'category',
-      name: '时间',
-      nameLocation: 'middle',
-      boundaryGap: true,
-      nameTextStyle: {
-        padding: [20, 0, 0, 0],
-        color: '#262626',
-        fontFamily: '',
-      },
-      axisLine: {
-        show: true,
-        lineStyle: {
-          color: '#f0f0f0',
-        },
-      },
-      axisLabel: {
-        show: true,
-        color: '#262626',
-        fontFamily: '',
-        showMinLabel: false,
-        formatter: (v) => dayjs(Number(v)).format('YYYY-MM-DD HH:mm'),
-      },
-      splitLine: {
-        show: true,
-        lineStyle: {
-          color: '#f0f0f0',
-        },
-      },
+      ...xAxisOptions,
       data: x,
     },
-    yAxis: {
-      show: true,
-      type: 'value',
-      axisLine: {
-        show: true,
-        lineStyle: {
-          color: '#f0f0f0',
-        },
-      },
-      splitLine: {
-        show: true,
-        lineStyle: {
-          color: '#f0f0f0',
-        },
-      },
-      axisLabel: {
-        show: true,
-        color: '#262626',
-        fontFamily: '',
-      },
-    },
+    yAxis: yAxisOptions,
     series,
   };
 
@@ -129,6 +201,35 @@ export function updateCounterData(data: Result) {
       data: x,
     },
     series,
+  });
+}
+
+export function updateHeatmapData(data: Result) {
+  const [x, y, max, res] = parseBucketData(data);
+
+  chart!.setOption({
+    xAxis: {
+      data: x,
+    },
+    yAxis: {
+      data: y,
+    },
+    visualMap: {
+      max: max,
+      text: [String(max), '0'],
+    },
+    series: [
+      {
+        type: 'heatmap',
+        data: res,
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: 'rgba(0, 0, 0, 0.5)',
+          },
+        },
+      },
+    ],
   });
 }
 
