@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { log } from '@utils/log';
 import { message } from 'ant-design-vue';
-import { updateCounterData } from '@utils/draw';
+import { updateCounterData, updateHeatmapData } from '@utils/draw';
 import axios from 'axios';
 
 const req = axios.create({
@@ -104,6 +104,7 @@ export const useStore = defineStore('data', {
       log('Update chart data...');
 
       if (this.chartType === 'bucket') {
+        updateHeatmapData(this.metricsData!);
       } else if (this.chartType === 'counter') {
         updateCounterData(this.metricsData!);
       }
@@ -131,7 +132,7 @@ export const useStore = defineStore('data', {
     getData(label: string, start: number, end: number) {
       log(`Start to get data of ${this.label}...`);
 
-      const dt = end - start;
+      const dt = Math.round((end - start) / 1800) * 7;
 
       return req
         .get(`/query_range`, {
@@ -140,7 +141,7 @@ export const useStore = defineStore('data', {
             end: end,
             query: label,
             // 按照 1800 秒内 257 个数据点获取数据
-            step: Math.round(dt / 1800) * 7 ?? 1,
+            step: dt === 0 ? 1 : dt,
           },
         })
         .then((res) => {
