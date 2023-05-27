@@ -32,6 +32,11 @@ interface State {
   start: number | null;
   end: number | null;
   chartType: 'bucket' | 'counter' | '';
+  query: {
+    start: number;
+    end: number;
+    step: number;
+  };
 }
 
 // 这些是 prometheus 自带的指标
@@ -59,6 +64,11 @@ export const useStore = defineStore('data', {
       start: null,
       end: null,
       chartType: '',
+      query: {
+        start: 0,
+        end: 0,
+        step: 0,
+      },
     };
   },
 
@@ -104,9 +114,9 @@ export const useStore = defineStore('data', {
       log('Update chart data...');
 
       if (this.chartType === 'bucket') {
-        updateHeatmapData(this.metricsData!);
+        updateHeatmapData(this.metricsData!, this.query);
       } else if (this.chartType === 'counter') {
-        updateCounterData(this.metricsData!);
+        updateCounterData(this.metricsData!, this.query);
       }
     },
 
@@ -132,16 +142,21 @@ export const useStore = defineStore('data', {
     getData(label: string, start: number, end: number) {
       log(`Start to get data of ${this.label}...`);
 
-      const dt = Math.round((end - start) / 1800) * 7;
+      // 按照 1800 秒内 257 个数据点获取数据
+      let dt = Math.round((end - start) / 1800) * 7;
+      dt = dt === 0 ? 1 : dt;
+
+      log(`start is ${start}`);
+      log(`end is ${end}`);
+      log(`step is ${dt}`);
+
+      this.query = { start, end, step: dt };
 
       return req
         .get(`/query_range`, {
           params: {
-            start: start,
-            end: end,
+            ...this.query,
             query: label,
-            // 按照 1800 秒内 257 个数据点获取数据
-            step: dt === 0 ? 1 : dt,
           },
         })
         .then((res) => {

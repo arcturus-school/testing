@@ -73,8 +73,16 @@ export function initChart(ctx: HTMLDivElement) {
   window.addEventListener('resize', resize);
 }
 
-export function drawHeatMap(data: Result) {
+export function drawHeatMap(data: Result, query: any) {
   const [x, y, max, res] = parseBucketData(data);
+
+  // 补齐剩下的坐标
+  const s = query.start * 1000,
+    step = query.step * 1000;
+
+  while (s < x[0]) {
+    x.unshift(x[0] - step);
+  }
 
   const option: EChartsOption = {
     tooltip: {
@@ -141,8 +149,16 @@ export function drawHeatMap(data: Result) {
   chart!.setOption(option);
 }
 
-export function drawCounter(data: Result) {
+export function drawCounter(data: Result, query: any) {
   const [x, series] = parseCounterData(data);
+
+  // 补齐剩下的坐标
+  const s = query.start * 1000,
+    step = query.step * 1000;
+
+  while (s < x[0]) {
+    x.unshift(x[0] - step);
+  }
 
   const option: EChartsOption = {
     tooltip: {
@@ -193,8 +209,15 @@ export function drawCounter(data: Result) {
   chart!.setOption(option);
 }
 
-export function updateCounterData(data: Result) {
+export function updateCounterData(data: Result, query: any) {
   const [x, series] = parseCounterData(data);
+
+  const s = query.start * 1000,
+    step = query.step * 1000;
+
+  while (s < x[0]) {
+    x.unshift(x[0] - step);
+  }
 
   chart!.setOption({
     xAxis: {
@@ -204,8 +227,15 @@ export function updateCounterData(data: Result) {
   });
 }
 
-export function updateHeatmapData(data: Result) {
+export function updateHeatmapData(data: Result, query: any) {
   const [x, y, max, res] = parseBucketData(data);
+
+  const s = query.start * 1000,
+    step = query.step * 1000;
+
+  while (s < x[0]) {
+    x.unshift(x[0] - step);
+  }
 
   chart!.setOption({
     xAxis: {

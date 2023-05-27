@@ -24,7 +24,7 @@ const route = useRoute();
 
 const chart = ref<HTMLDivElement>();
 
-const { loading, metricsData, chartType } = storeToRefs(store);
+const { loading, metricsData, chartType, query } = storeToRefs(store);
 
 onMounted(() => {
   initChart(chart.value!);
@@ -44,10 +44,10 @@ watch(
       if (metricsData.value?.result.length !== 0) {
         switch (chartType.value) {
           case 'bucket':
-            drawHeatMap(metricsData.value!);
+            drawHeatMap(metricsData.value!, query.value);
             break;
           case 'counter':
-            drawCounter(metricsData.value!);
+            drawCounter(metricsData.value!, query.value);
             break;
         }
       }
