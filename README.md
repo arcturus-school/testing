@@ -14,7 +14,7 @@
 
 ### 前端要求
 
-使用 vue 框架和 <del>element-ui 组件( 参考 vue-element-admin )</del> 咱用 antd 吧  (╯▽╰ )
+使用 vue 框架和 <del>element-ui 组件( 参考 vue-element-admin )</del> 咱用 antd 吧 (╯▽╰ )
 
 ### 数据来源
 
@@ -48,6 +48,12 @@ C/Golang
 
 3. 实现满足需求, 且代码可稳定运行
 
-## grafana 效果图
+## 效果展示
+
+### grafana
 
 ![grafana](./assets/grafana.png)
+
+## vue + echart + antd
+
+![echarts](./assets/echarts.png)
