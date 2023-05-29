@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { log } from '@utils/log';
 import { message } from 'ant-design-vue';
-import { updateCounterData, updateHeatmapData } from '@utils/draw';
+import { clear, updateCounterData, updateHeatmapData } from '@utils/draw';
 import axios from 'axios';
 
 const req = axios.create({
@@ -112,6 +112,11 @@ export const useStore = defineStore('data', {
 
     updateChartData() {
       log('Update chart data...');
+
+      if (this.metricsData!.result.length === 0) {
+        clear();
+        return;
+      }
 
       if (this.chartType === 'bucket') {
         updateHeatmapData(this.metricsData!, this.query);
