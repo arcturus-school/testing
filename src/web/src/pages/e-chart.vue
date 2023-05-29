@@ -1,6 +1,7 @@
 <template>
   <div class="chart-wrapper center">
     <a-spin v-if="loading" />
+    <e-empty v-else-if="metricsData?.result.length === 0"></e-empty>
     <div ref="chart" id="chart"></div>
   </div>
 </template>
@@ -9,6 +10,7 @@
 import { useStore } from '@src/store';
 import { storeToRefs } from 'pinia';
 import { useRoute } from 'vue-router';
+import EEmpty from '@pages/e-empty.vue';
 import { watch, ref, onMounted, onUnmounted } from 'vue';
 import {
   drawHeatMap,
