@@ -78,10 +78,19 @@ export function drawHeatMap(data: Result, query: any) {
 
   // 补齐剩下的坐标
   const s = query.start * 1000,
+    e = query.end * 1000,
     step = query.step * 1000;
 
   while (s < x[0]) {
     x.unshift(x[0] - step);
+  }
+
+  while (true) {
+    if (x[x.length - 1] > e) {
+      break;
+    }
+
+    x.push(x[x.length - 1] + step);
   }
 
   const option: EChartsOption = {
@@ -154,10 +163,19 @@ export function drawCounter(data: Result, query: any) {
 
   // 补齐剩下的坐标
   const s = query.start * 1000,
+    e = query.end * 1000,
     step = query.step * 1000;
 
   while (s < x[0]) {
     x.unshift(x[0] - step);
+  }
+
+  while (true) {
+    if (x[x.length - 1] > e) {
+      break;
+    }
+
+    x.push(x[x.length - 1] + step);
   }
 
   const option: EChartsOption = {
@@ -213,10 +231,19 @@ export function updateCounterData(data: Result, query: any) {
   const [x, series] = parseCounterData(data);
 
   const s = query.start * 1000,
+    e = query.end * 1000,
     step = query.step * 1000;
 
   while (s < x[0]) {
     x.unshift(x[0] - step);
+  }
+
+  while (true) {
+    if (x[x.length - 1] > e) {
+      break;
+    }
+
+    x.push(x[x.length - 1] + step);
   }
 
   chart!.setOption({
@@ -231,10 +258,19 @@ export function updateHeatmapData(data: Result, query: any) {
   const [x, y, max, res] = parseBucketData(data);
 
   const s = query.start * 1000,
+    e = query.end * 1000,
     step = query.step * 1000;
 
   while (s < x[0]) {
     x.unshift(x[0] - step);
+  }
+
+  while (true) {
+    if (x[x.length - 1] > e) {
+      break;
+    }
+
+    x.push(x[x.length - 1] + step);
   }
 
   chart!.setOption({
